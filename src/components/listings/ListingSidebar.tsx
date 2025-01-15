@@ -56,7 +56,7 @@ export const ListingSidebar = ({
   if (isOpen !== undefined && onOpenChange) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+        <SheetContent side="left" className="w-[300px] sm:w-[400px] p-0">
           <SidebarContent />
         </SheetContent>
       </Sheet>

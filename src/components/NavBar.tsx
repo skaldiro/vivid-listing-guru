@@ -93,7 +93,7 @@ const NavBar = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px]">
-                <div className="flex flex-col space-y-6 mt-4">
+                <nav className="flex flex-col space-y-4 mt-4">
                   <NavigationMenu className="w-full">
                     <NavigationMenuList className="flex flex-col w-full space-y-2">
                       <NavItems onItemClick={() => setIsOpen(false)} />
@@ -121,7 +121,7 @@ const NavBar = () => {
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </Button>
-                </div>
+                </nav>
               </SheetContent>
             </Sheet>
           </div>
