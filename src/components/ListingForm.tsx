@@ -2,29 +2,47 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { BasicInfoStep } from "./listing/BasicInfoStep";
 import { PropertyDetailsStep } from "./listing/PropertyDetailsStep";
 import { AdditionalDetailsStep } from "./listing/AdditionalDetailsStep";
 import { StepIndicator } from "./listing/StepIndicator";
 
+interface LocationState {
+  prefill?: {
+    title: string;
+    listingType: string;
+    propertyType: string;
+    bedrooms: string;
+    bathrooms: string;
+    location: string;
+    price: string;
+    standoutFeatures: string;
+    additionalDetails: string;
+    generationInstructions: string;
+  };
+}
+
 const ListingForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const prefillData = (location.state as LocationState)?.prefill;
+  
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    title: "",
-    listingType: "",
-    propertyType: "",
-    bedrooms: "",
-    bathrooms: "",
-    location: "",
-    price: "",
-    standoutFeatures: "",
-    additionalDetails: "",
-    generationInstructions: "",
+    title: prefillData?.title || "",
+    listingType: prefillData?.listingType || "",
+    propertyType: prefillData?.propertyType || "",
+    bedrooms: prefillData?.bedrooms || "",
+    bathrooms: prefillData?.bathrooms || "",
+    location: prefillData?.location || "",
+    price: prefillData?.price || "",
+    standoutFeatures: prefillData?.standoutFeatures || "",
+    additionalDetails: prefillData?.additionalDetails || "",
+    generationInstructions: prefillData?.generationInstructions || "",
     images: [] as File[]
   });
 
@@ -151,7 +169,9 @@ const ListingForm = () => {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold mb-2">Create New Listing</h1>
+        <h1 className="text-2xl font-semibold mb-2">
+          {prefillData ? "Regenerate Listing" : "Create New Listing"}
+        </h1>
         <p className="text-gray-600">Fill in the details below to generate your listing</p>
       </div>
 
