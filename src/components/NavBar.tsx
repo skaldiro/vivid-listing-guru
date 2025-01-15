@@ -17,10 +17,12 @@ import { Button } from "@/components/ui/button";
 import { Settings, LogOut, User, Menu, PlusCircle, List } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
 
 const NavBar = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -86,7 +88,7 @@ const NavBar = () => {
         <div className="ml-auto flex items-center space-x-4">
           {/* Mobile Navigation */}
           <div className="md:hidden">
-            <Sheet>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Menu className="h-5 w-5" />
@@ -96,7 +98,7 @@ const NavBar = () => {
                 <div className="flex flex-col space-y-4 mt-4">
                   <NavigationMenu>
                     <NavigationMenuList className="flex-col items-start space-y-2">
-                      <NavItems onItemClick={() => document.querySelector('[data-radix-collection-item]')?.click()} />
+                      <NavItems onItemClick={() => setIsOpen(false)} />
                     </NavigationMenuList>
                   </NavigationMenu>
                   <Button 
@@ -104,7 +106,7 @@ const NavBar = () => {
                     className="w-full justify-start" 
                     onClick={() => {
                       navigate("/settings");
-                      document.querySelector('[data-radix-collection-item]')?.click();
+                      setIsOpen(false);
                     }}
                   >
                     <Settings className="mr-2 h-4 w-4" />
@@ -115,7 +117,7 @@ const NavBar = () => {
                     className="w-full justify-start" 
                     onClick={() => {
                       handleLogout();
-                      document.querySelector('[data-radix-collection-item]')?.click();
+                      setIsOpen(false);
                     }}
                   >
                     <LogOut className="mr-2 h-4 w-4" />
