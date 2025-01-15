@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AuthLayout from "./layouts/AuthLayout";
 import { MainLayout } from "./layouts/MainLayout";
 import Home from "./pages/Home";
@@ -26,6 +26,8 @@ const App = () => (
             <Route path="/listings" element={<Listings />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
+          {/* Catch all other routes and redirect to auth if not authenticated */}
+          <Route path="*" element={<Navigate to="/auth" replace />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

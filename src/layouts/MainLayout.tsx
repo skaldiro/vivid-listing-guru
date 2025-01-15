@@ -1,7 +1,37 @@
 import NavBar from "@/components/NavBar";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-const MainLayout = () => {
+export const MainLayout = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+
+      // Listen for auth changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        setIsAuthenticated(!!session);
+      });
+
+      return () => subscription.unsubscribe();
+    };
+
+    checkAuth();
+  }, []);
+
+  // Show nothing while checking auth status
+  if (isAuthenticated === null) {
+    return null;
+  }
+
+  // Redirect to auth page if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+
   return (
     <div className="main-layout">
       <NavBar />
@@ -17,5 +47,3 @@ const MainLayout = () => {
     </div>
   );
 };
-
-export { MainLayout };
