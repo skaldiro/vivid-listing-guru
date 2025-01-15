@@ -9,7 +9,139 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      listing_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          listing_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          listing_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          listing_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_images_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listings: {
+        Row: {
+          additional_details: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          created_at: string
+          full_description: string | null
+          generation_instructions: string | null
+          id: string
+          key_features: string[] | null
+          listing_type: string
+          location: string
+          price: number | null
+          property_type: string
+          short_summary: string | null
+          standout_features: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          additional_details?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          full_description?: string | null
+          generation_instructions?: string | null
+          id?: string
+          key_features?: string[] | null
+          listing_type: string
+          location: string
+          price?: number | null
+          property_type: string
+          short_summary?: string | null
+          standout_features?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          additional_details?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string
+          full_description?: string | null
+          generation_instructions?: string | null
+          id?: string
+          key_features?: string[] | null
+          listing_type?: string
+          location?: string
+          price?: number | null
+          property_type?: string
+          short_summary?: string | null
+          standout_features?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          agency_name: string
+          created_at: string
+          email: string
+          email_notifications: boolean | null
+          full_name: string | null
+          id: string
+          monthly_usage_count: number | null
+          updated_at: string
+          usage_reset_date: string
+        }
+        Insert: {
+          agency_name: string
+          created_at?: string
+          email: string
+          email_notifications?: boolean | null
+          full_name?: string | null
+          id: string
+          monthly_usage_count?: number | null
+          updated_at?: string
+          usage_reset_date?: string
+        }
+        Update: {
+          agency_name?: string
+          created_at?: string
+          email?: string
+          email_notifications?: boolean | null
+          full_name?: string | null
+          id?: string
+          monthly_usage_count?: number | null
+          updated_at?: string
+          usage_reset_date?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
