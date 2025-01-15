@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState, useEffect } from "react";
+import { AuthError } from "@supabase/supabase-js";
 
 const AuthForm = () => {
   const [error, setError] = useState<string | null>(null);
@@ -10,20 +11,36 @@ const AuthForm = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'USER_UPDATED' || event === 'SIGNED_IN') {
-        const error = session?.error;
-        if (error) {
-          setError(error.message);
-        } else {
-          setError(null);
-        }
+        // Clear any existing errors on successful sign in
+        setError(null);
       }
       if (event === 'SIGNED_OUT') {
         setError(null);
       }
     });
 
+    // Set up error handling for auth state changes
+    const handleAuthError = async () => {
+      const { error: authError } = await supabase.auth.getSession();
+      if (authError) {
+        setError(getErrorMessage(authError));
+      }
+    };
+
+    handleAuthError();
     return () => subscription.unsubscribe();
   }, []);
+
+  const getErrorMessage = (error: AuthError) => {
+    switch (error.message) {
+      case 'Invalid login credentials':
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 'Email not confirmed':
+        return 'Please verify your email address before signing in.';
+      default:
+        return error.message;
+    }
+  };
 
   return (
     <div className="max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-md">
