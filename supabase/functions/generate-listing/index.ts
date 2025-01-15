@@ -24,19 +24,20 @@ serve(async (req) => {
     )
 
     // Get the images for the listing
-    const { data: images } = await supabase.storage
-      .from('listing-images')
-      .list(listingId.toString());
+    const { data: listingImages, error: listingImagesError } = await supabase
+      .from('listing_images')
+      .select('image_url')
+      .eq('listing_id', listingId);
+
+    if (listingImagesError) {
+      console.error('Error fetching listing images:', listingImagesError);
+      throw listingImagesError;
+    }
 
     let imageAnalysis = '';
-    if (images && images.length > 0) {
-      const imageUrls = images.map(image => {
-        const { data } = supabase.storage
-          .from('listing-images')
-          .getPublicUrl(`${listingId}/${image.name}`);
-        return data.publicUrl;
-      });
-
+    if (listingImages && listingImages.length > 0) {
+      console.log('Analyzing images:', listingImages);
+      
       // Analyze images with GPT-4 Vision
       const imageAnalysisResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -52,11 +53,11 @@ serve(async (req) => {
               content: [
                 {
                   type: 'text',
-                  text: 'Analyze these property images and describe the key visual features and amenities you can see. Focus on architectural details, condition, design elements, and any standout features.',
+                  text: 'Analyze these property images and describe the key visual features and amenities you can see. Focus on architectural details, condition, design elements, and any standout features that would be valuable in a property listing.',
                 },
-                ...imageUrls.map(url => ({
+                ...listingImages.map(img => ({
                   type: 'image_url',
-                  image_url: url,
+                  image_url: img.image_url,
                 })),
               ],
             },
@@ -64,8 +65,15 @@ serve(async (req) => {
         }),
       });
 
+      if (!imageAnalysisResponse.ok) {
+        const errorData = await imageAnalysisResponse.json();
+        console.error('OpenAI API error:', errorData);
+        throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+      }
+
       const analysisData = await imageAnalysisResponse.json();
       imageAnalysis = analysisData.choices[0].message.content;
+      console.log('Image analysis:', imageAnalysis);
     }
 
     const prompt = `Create a compelling property listing for the following property:
@@ -77,17 +85,17 @@ serve(async (req) => {
       
       Image Analysis: ${imageAnalysis}
 
-      Please provide:
-      1. A professional and engaging full description that incorporates details from both the provided information and image analysis (full_description)
-      2. A concise summary for preview cards (short_summary)
-      3. A list of 5 key selling points (key_features)
+      Based on both the provided information and the image analysis, please provide:
+      1. A professional and engaging full description that incorporates all the visual details from the images and the provided information
+      2. A concise summary for preview cards
+      3. A list of 5 key selling points, incorporating both the provided features and visual elements from the images
 
       Return your response in the following JSON format:
       {
         "full_description": "your full description here",
         "short_summary": "your short summary here",
         "key_features": ["feature 1", "feature 2", "feature 3", "feature 4", "feature 5"]
-      }`
+      }`;
 
     console.log('Sending request to OpenAI');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
