@@ -122,18 +122,14 @@ const ListingForm = () => {
         }
       }
 
-      const response = await fetch('/api/generate-listing', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const { error: generateError } = await supabase.functions.invoke('generate-listing', {
+        body: {
           listingId: listing.id,
           ...formData
-        }),
+        }
       });
 
-      if (!response.ok) throw new Error('Failed to generate listing content');
+      if (generateError) throw generateError;
 
       toast({
         title: "Success!",
