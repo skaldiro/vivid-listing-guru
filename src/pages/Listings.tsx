@@ -30,16 +30,16 @@ const Listings = () => {
 
   useEffect(() => {
     if (listings && listings.length > 0) {
-      // If we just created a new listing, select it
+      // If we just created a new listing, select it and scroll to top
       if (location.state?.newListing) {
         const newListing = listings[0];
         setSelectedListing(newListing);
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else if (!selectedListing) {
         setSelectedListing(listings[0]);
       }
     }
-  }, [listings, location.state]);
+  }, [listings, location.state, selectedListing]);
 
   if (isLoading) {
     return (
@@ -71,7 +71,7 @@ const Listings = () => {
       </div>
 
       <div className="grid lg:grid-cols-12 gap-6">
-        <div className="hidden lg:block lg:col-span-4">
+        <div className="hidden lg:block lg:col-span-4 h-[calc(100vh-8rem)]">
           <ListingSidebar 
             listings={listings || []}
             selectedListing={selectedListing}

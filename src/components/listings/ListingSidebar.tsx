@@ -10,7 +10,7 @@ interface ListingSidebarProps {
 
 export const ListingSidebar = ({ listings, selectedListing, onSelectListing }: ListingSidebarProps) => {
   return (
-    <div className="col-span-4 bg-white rounded-lg shadow h-[calc(100vh-8rem)]">
+    <div className="h-full bg-white rounded-lg shadow">
       <div className="p-4 border-b">
         <h2 className="text-lg font-semibold">Your Listings</h2>
       </div>
