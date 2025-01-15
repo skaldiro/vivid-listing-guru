@@ -175,23 +175,25 @@ const ListingForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold mb-2">
-          {prefillData ? "Regenerate Listing" : "Create New Listing"}
-        </h1>
-        <p className="text-gray-600">Fill in the details below to generate your listing</p>
-      </div>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold mb-2">
+            {prefillData ? "Regenerate Listing" : "Create New Listing"}
+          </h1>
+          <p className="text-gray-600">Fill in the details below to generate your listing</p>
+        </div>
 
-      <FormSteps
-        step={step}
-        formData={formData}
-        isLoading={isLoading}
-        handleInputChange={handleInputChange}
-        handleImageUpload={handleImageUpload}
-        handleSubmit={handleSubmit}
-        setStep={setStep}
-      />
+        <FormSteps
+          step={step}
+          formData={formData}
+          isLoading={isLoading}
+          handleInputChange={handleInputChange}
+          handleImageUpload={handleImageUpload}
+          handleSubmit={handleSubmit}
+          setStep={setStep}
+        />
+      </div>
     </div>
   );
 };
