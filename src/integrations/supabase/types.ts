@@ -52,7 +52,7 @@ export type Database = {
           location: string
           property_type: string
           short_summary: string | null
-          standout_features: string | null
+          standout_features: string[] | null
           title: string
           updated_at: string
           user_id: string
@@ -70,7 +70,7 @@ export type Database = {
           location: string
           property_type: string
           short_summary?: string | null
-          standout_features?: string | null
+          standout_features?: string[] | null
           title: string
           updated_at?: string
           user_id: string
@@ -88,7 +88,7 @@ export type Database = {
           location?: string
           property_type?: string
           short_summary?: string | null
-          standout_features?: string | null
+          standout_features?: string[] | null
           title?: string
           updated_at?: string
           user_id?: string

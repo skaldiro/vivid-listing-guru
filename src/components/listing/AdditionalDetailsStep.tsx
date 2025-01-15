@@ -1,15 +1,18 @@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Upload } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { STANDOUT_FEATURES } from "./constants";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface AdditionalDetailsStepProps {
   formData: {
-    standoutFeatures: string;
+    standoutFeatures: string[];
     additionalDetails: string;
     generationInstructions: string;
     images: File[];
   };
-  handleInputChange: (field: string, value: string) => void;
+  handleInputChange: (field: string, value: any) => void;
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -18,16 +21,51 @@ export const AdditionalDetailsStep = ({
   handleInputChange, 
   handleImageUpload 
 }: AdditionalDetailsStepProps) => {
+  const toggleFeature = (feature: string) => {
+    const features = formData.standoutFeatures || [];
+    const newFeatures = features.includes(feature)
+      ? features.filter(f => f !== feature)
+      : [...features, feature];
+    handleInputChange("standoutFeatures", newFeatures);
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="standoutFeatures">Standout Features</Label>
-        <Textarea 
-          id="standoutFeatures"
-          value={formData.standoutFeatures}
-          onChange={(e) => handleInputChange("standoutFeatures", e.target.value)}
-          placeholder="Enter the standout features of the property"
-        />
+        <div className="border rounded-lg p-4">
+          <ScrollArea className="h-32">
+            <div className="flex flex-wrap gap-2">
+              {formData.standoutFeatures?.map(feature => (
+                <Badge
+                  key={feature}
+                  variant="secondary"
+                  className="cursor-pointer bg-primary/10 hover:bg-primary/20"
+                  onClick={() => toggleFeature(feature)}
+                >
+                  {feature} ×
+                </Badge>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+        <ScrollArea className="h-48 w-full border rounded-lg mt-2">
+          <div className="p-4">
+            <p className="text-sm text-muted-foreground mb-2">Suggested Features:</p>
+            <div className="flex flex-wrap gap-2">
+              {STANDOUT_FEATURES.map(feature => (
+                <Badge
+                  key={feature}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-primary/10"
+                  onClick={() => toggleFeature(feature)}
+                >
+                  {feature}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </ScrollArea>
       </div>
 
       <div className="space-y-2">

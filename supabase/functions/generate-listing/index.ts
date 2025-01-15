@@ -16,18 +16,28 @@ serve(async (req) => {
     const requestData = await req.json();
     console.log('Request data:', requestData);
 
-    const { listingId, listingType, propertyType, bedrooms, bathrooms, location, standoutFeatures, additionalDetails } = requestData;
-
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
+    // Get user's agency name
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('agency_name')
+      .eq('id', requestData.user_id)
+      .single();
+
+    if (profileError) {
+      console.error('Error fetching profile:', profileError);
+      throw profileError;
+    }
+
     // Get the images for the listing
     const { data: listingImages, error: listingImagesError } = await supabase
       .from('listing_images')
       .select('image_url')
-      .eq('listing_id', listingId);
+      .eq('listing_id', requestData.listingId);
 
     if (listingImagesError) {
       console.error('Error fetching listing images:', listingImagesError);
@@ -38,7 +48,6 @@ serve(async (req) => {
     if (listingImages && listingImages.length > 0) {
       console.log('Analyzing images:', listingImages);
       
-      // Analyze images with GPT-4 Vision
       const imageAnalysisResponse = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -60,7 +69,7 @@ serve(async (req) => {
                   image_url: {
                     url: img.image_url
                   }
-                })),
+                }))
               ],
             },
           ],
@@ -78,19 +87,21 @@ serve(async (req) => {
       console.log('Image analysis:', imageAnalysis);
     }
 
-    const prompt = `Create a compelling property listing for the following property:
-      Type: ${listingType} - ${propertyType}
-      Details: ${bedrooms} bedrooms, ${bathrooms} bathrooms
-      Location: ${location}
-      Key Features: ${standoutFeatures}
-      Additional Information: ${additionalDetails}
+    const prompt = `Create a compelling property listing for ${profile.agency_name} with the following details:
+      Type: ${requestData.listingType} - ${requestData.propertyType}
+      Details: ${requestData.bedrooms} bedrooms, ${requestData.bathrooms} bathrooms
+      Location: ${requestData.location}
+      Key Features: ${requestData.standoutFeatures ? requestData.standoutFeatures.join(', ') : ''}
+      Additional Information: ${requestData.additionalDetails || ''}
       
       Image Analysis: ${imageAnalysis}
 
-      Based on both the provided information and the image analysis, please provide:
-      1. A professional and engaging full description that incorporates all the visual details from the images and the provided information
+      Generation Instructions: ${requestData.generationInstructions || ''}
+
+      Based on all the provided information, including the agency name, generation instructions, and image analysis, please provide:
+      1. A professional and engaging full description that incorporates all details
       2. A concise summary for preview cards
-      3. A list of 5 key selling points, incorporating both the provided features and visual elements from the images
+      3. A list of 5 key selling points
 
       Return your response in the following JSON format:
       {
@@ -99,7 +110,7 @@ serve(async (req) => {
         "key_features": ["feature 1", "feature 2", "feature 3", "feature 4", "feature 5"]
       }`;
 
-    console.log('Sending request to OpenAI');
+    console.log('Sending request to OpenAI with prompt:', prompt);
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -146,7 +157,7 @@ serve(async (req) => {
         short_summary: generatedContent.short_summary,
         key_features: generatedContent.key_features,
       })
-      .eq('id', listingId);
+      .eq('id', requestData.listingId);
 
     if (updateError) {
       console.error('Database update error:', updateError);

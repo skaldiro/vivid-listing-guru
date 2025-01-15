@@ -10,11 +10,11 @@ interface ListingSidebarProps {
 
 export const ListingSidebar = ({ listings, selectedListing, onSelectListing }: ListingSidebarProps) => {
   return (
-    <div className="col-span-4 bg-white rounded-lg shadow">
+    <div className="col-span-4 bg-white rounded-lg shadow h-[calc(100vh-8rem)]">
       <div className="p-4 border-b">
         <h2 className="text-lg font-semibold">Your Listings</h2>
       </div>
-      <ScrollArea className="h-[calc(100vh-16rem)]">
+      <ScrollArea className="h-[calc(100vh-12rem)]">
         <div className="space-y-2 p-4">
           {listings?.map((listing) => (
             <div
