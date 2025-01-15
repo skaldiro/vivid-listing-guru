@@ -28,8 +28,8 @@ export const FormSteps = ({
     <div>
       <StepIndicator currentStep={step} totalSteps={3} />
 
-      <div className="bg-white rounded-lg shadow-sm border p-8 w-full">
-        <form onSubmit={handleSubmit} className="space-y-6 w-full">
+      <div className="bg-white rounded-lg shadow-sm border p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {step === 1 && (
             <>
               <BasicInfoStep 
