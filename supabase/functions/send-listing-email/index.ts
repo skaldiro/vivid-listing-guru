@@ -80,6 +80,7 @@ serve(async (req) => {
       ` : ''}
     `;
 
+    // During testing, always send to the user's own email
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -87,7 +88,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Electric AI <onboarding@resend.dev>',
+        from: 'onboarding@resend.dev', // Using Resend's testing domain
         to: [listing.profiles.email],
         subject: `Your Listing is Ready! - ${listing.title}`,
         html: emailHtml,
@@ -96,6 +97,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       const error = await response.text();
+      console.error('Resend API error:', error);
       throw new Error(`Failed to send email: ${error}`);
     }
 
