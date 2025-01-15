@@ -25,14 +25,22 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Error signing out",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Logout error:", error);
+        toast({
+          title: "Error signing out",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+      // Always navigate to auth page, even if there's an error
+      // This ensures users can re-authenticate if their session is invalid
+      navigate("/auth");
+    } catch (error) {
+      console.error("Unexpected logout error:", error);
+      // Force navigation to auth page on unexpected errors
       navigate("/auth");
     }
   };

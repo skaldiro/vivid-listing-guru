@@ -19,6 +19,7 @@ const Settings = () => {
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error || !session) {
         console.error("Auth error:", error);
+        await supabase.auth.signOut(); // Clear any invalid session
         navigate("/auth");
         return;
       }
@@ -27,8 +28,9 @@ const Settings = () => {
     checkAuth();
 
     // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_OUT' || !session) {
+        await supabase.auth.signOut(); // Ensure complete signout
         navigate("/auth");
       }
     });
@@ -39,39 +41,51 @@ const Settings = () => {
   const { data: profile, isLoading, error: profileError } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('Not authenticated');
-      }
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          throw new Error('Not authenticated');
+        }
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      if (error) {
-        console.error("Profile fetch error:", error);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        
+        if (error) {
+          console.error("Profile fetch error:", error);
+          throw error;
+        }
+        return data;
+      } catch (error) {
+        console.error("Profile query error:", error);
+        // Clear invalid session
+        await supabase.auth.signOut();
+        navigate("/auth");
         throw error;
       }
-      return data;
     },
     retry: false,
-    onError: (error) => {
-      console.error("Profile query error:", error);
-      toast({
-        title: "Error loading profile",
-        description: "Please try signing in again",
-        variant: "destructive"
-      });
-      navigate("/auth");
+    meta: {
+      errorHandler: (error: Error) => {
+        console.error("Profile query error:", error);
+        toast({
+          title: "Error loading profile",
+          description: "Please try signing in again",
+          variant: "destructive"
+        });
+        navigate("/auth");
+      }
     }
   });
 
   const updateEmailNotifications = useMutation({
     mutationFn: async (checked: boolean) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('Not authenticated');
+      }
 
       const { error } = await supabase
         .from('profiles')
@@ -103,7 +117,7 @@ const Settings = () => {
   }
 
   if (profileError || !profile) {
-    return null; // The error is handled in the query's onError callback
+    return null; // The error is handled in the query's meta.errorHandler
   }
 
   return (
