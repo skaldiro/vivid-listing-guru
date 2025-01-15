@@ -80,10 +80,6 @@ serve(async (req) => {
       ` : ''}
     `;
 
-    // During development, always send to the verified email
-    const isDevelopment = true; // You can make this dynamic based on environment later
-    const toEmail = isDevelopment ? 'skaldiro@gmail.com' : listing.profiles.email;
-
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -91,8 +87,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'onboarding@resend.dev',
-        to: [toEmail],
+        from: 'Electric AI Listing Generator <notifications@email.subyak.com>',
+        to: [listing.profiles.email],
         subject: `Your Listing is Ready! - ${listing.title}`,
         html: emailHtml,
       }),
