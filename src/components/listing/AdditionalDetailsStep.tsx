@@ -31,6 +31,10 @@ export const AdditionalDetailsStep = ({
 
   return (
     <div className="space-y-6">
+      <p className="text-sm text-gray-600 mb-4">
+        The more details you provide, the less the AI system will assume about the property - leading to more accurate descriptions.
+      </p>
+
       <div className="space-y-2">
         <Label htmlFor="standoutFeatures">Standout Features</Label>
         <div className="border rounded-lg p-4">

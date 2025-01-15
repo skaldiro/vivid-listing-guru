@@ -1,7 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LISTING_TYPES, PROPERTY_TYPES } from "./constants";
 
 interface BasicInfoStepProps {
   formData: {
@@ -21,40 +20,42 @@ export const BasicInfoStep = ({ formData, handleInputChange }: BasicInfoStepProp
           id="title"
           value={formData.title}
           onChange={(e) => handleInputChange("title", e.target.value)}
-          placeholder="Enter listing title"
+          placeholder="This is just for your records and will not be used in the listing"
         />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="listingType">Listing Type</Label>
         <Select 
-          value={formData.listingType}
+          value={formData.listingType} 
           onValueChange={(value) => handleInputChange("listingType", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select listing type" />
           </SelectTrigger>
           <SelectContent>
-            {LISTING_TYPES.map(type => (
-              <SelectItem key={type} value={type}>{type}</SelectItem>
-            ))}
+            <SelectItem value="For Sale">For Sale</SelectItem>
+            <SelectItem value="For Rent">For Rent</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="propertyType">Property Type</Label>
-        <Select
-          value={formData.propertyType}
+        <Select 
+          value={formData.propertyType} 
           onValueChange={(value) => handleInputChange("propertyType", value)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select property type" />
           </SelectTrigger>
           <SelectContent>
-            {PROPERTY_TYPES.map(type => (
-              <SelectItem key={type} value={type}>{type}</SelectItem>
-            ))}
+            <SelectItem value="House">House</SelectItem>
+            <SelectItem value="Flat">Flat</SelectItem>
+            <SelectItem value="Bungalow">Bungalow</SelectItem>
+            <SelectItem value="Maisonette">Maisonette</SelectItem>
+            <SelectItem value="Land">Land</SelectItem>
+            <SelectItem value="Commercial">Commercial</SelectItem>
           </SelectContent>
         </Select>
       </div>

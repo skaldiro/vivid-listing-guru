@@ -52,17 +52,37 @@ serve(async (req) => {
     ).join('');
 
     const emailHtml = `
-      <h1>Your Listing is Ready!</h1>
+      <h1>${listing.title}</h1>
       <h2>Listing Details:</h2>
       <ul>
-        <li><strong>Title:</strong> ${listing.title}</li>
         <li><strong>Type:</strong> ${listing.listing_type} - ${listing.property_type}</li>
         <li><strong>Location:</strong> ${listing.location}</li>
         <li><strong>Bedrooms:</strong> ${listing.bedrooms}</li>
         <li><strong>Bathrooms:</strong> ${listing.bathrooms}</li>
       </ul>
 
-      <h3>Generated Content:</h3>
+      <div style="margin-top: 20px;">
+        <strong>Standout Features:</strong>
+        <ul>
+          ${listing.standout_features?.map((feature: string) => `<li>${feature}</li>`).join('') || 'None specified'}
+        </ul>
+      </div>
+
+      ${listing.additional_details ? `
+        <div style="margin-top: 20px;">
+          <strong>Additional Details:</strong>
+          <p>${listing.additional_details}</p>
+        </div>
+      ` : ''}
+
+      ${listing.generation_instructions ? `
+        <div style="margin-top: 20px;">
+          <strong>Generation Instructions:</strong>
+          <p>${listing.generation_instructions}</p>
+        </div>
+      ` : ''}
+
+      <h2>Listing:</h2>
       <h4>Full Description:</h4>
       <p>${listing.full_description}</p>
 
@@ -78,6 +98,14 @@ serve(async (req) => {
         <h4>Uploaded Images:</h4>
         <ul>${imagesList}</ul>
       ` : ''}
+
+      <div style="margin-top: 30px; padding: 20px; background-color: #f5f5f5; border-radius: 5px;">
+        <p style="font-style: italic;">Due to the nature of AI, extra details or inaccuracies may sometimes appear in generated descriptions. Please ensure that all of the information in the generated description is accurate to your listing and edit as necessary before using in your particulars. Electric AI takes no responsibility in any inaccurate information generated in listing descriptions.</p>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <p>With Love,<br>Hector @ Electric AI</p>
+      </div>
     `;
 
     const response = await fetch('https://api.resend.com/emails', {
@@ -89,7 +117,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: 'Electric AI Listing Generator <notifications@email.subyak.com>',
         to: [listing.profiles.email],
-        subject: `Your Listing is Ready! - ${listing.title}`,
+        subject: `${listing.title} - Your Listing is Ready`,
         html: emailHtml,
       }),
     });
