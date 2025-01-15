@@ -29,9 +29,23 @@ const AuthForm = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const validateForm = () => {
+    if (!email || !password) {
+      setError("Email and password are required");
+      return false;
+    }
+    if (isSignUp && (!fullName || !agencyName)) {
+      setError("Full name and agency name are required for sign up");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!validateForm()) return;
 
     try {
       if (isSignUp) {
@@ -66,6 +80,8 @@ const AuthForm = () => {
         return 'Invalid email or password. Please check your credentials and try again.';
       case 'Email not confirmed':
         return 'Please verify your email address before signing in.';
+      case 'Invalid email or password':
+        return 'Invalid email or password. Please check your credentials and try again.';
       default:
         return error.message;
     }
