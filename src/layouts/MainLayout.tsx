@@ -1,26 +1,50 @@
 import NavBar from "@/components/NavBar";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const MainLayout = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // If there's no valid session, force logout and redirect
+        if (!session) {
+          await supabase.auth.signOut();
+          setIsAuthenticated(false);
+          navigate('/auth');
+          return;
+        }
 
-      // Listen for auth changes
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
         setIsAuthenticated(!!session);
-      });
 
-      return () => subscription.unsubscribe();
+        // Listen for auth changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          console.log("Auth state change:", event);
+          if (event === 'SIGNED_OUT' || !session) {
+            setIsAuthenticated(false);
+            navigate('/auth');
+          } else {
+            setIsAuthenticated(!!session);
+          }
+        });
+
+        return () => subscription.unsubscribe();
+      } catch (error) {
+        console.error("Auth error:", error);
+        // On any error, force logout and redirect
+        await supabase.auth.signOut();
+        setIsAuthenticated(false);
+        navigate('/auth');
+      }
     };
 
     checkAuth();
-  }, []);
+  }, [navigate]);
 
   // Show nothing while checking auth status
   if (isAuthenticated === null) {
