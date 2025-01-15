@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AuthError } from "@supabase/supabase-js";
 import { AuthFormFields } from "./auth/AuthFormFields";
 import { AuthSubmitButton } from "./auth/AuthSubmitButton";
+import { useToast } from "@/hooks/use-toast";
 
 const AuthForm = () => {
   const [error, setError] = useState<string | null>(null);
@@ -13,6 +14,7 @@ const AuthForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const validateForm = () => {
     if (!email || !password) {
@@ -30,14 +32,14 @@ const AuthForm = () => {
     e.preventDefault();
     setError(null);
 
-    if (!validateForm() || isSubmitting) return;
-
+    if (!validateForm()) return;
+    
     setIsSubmitting(true);
-    console.log("Submitting form...", { email, isSignUp }); // Debug log
+    console.log("Starting auth process...", { email, isSignUp });
 
     try {
       if (isSignUp) {
-        const { error: signUpError } = await supabase.auth.signUp({
+        const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -47,7 +49,15 @@ const AuthForm = () => {
             }
           }
         });
+
         if (signUpError) throw signUpError;
+
+        if (data.user) {
+          toast({
+            title: "Account created successfully",
+            description: "Please check your email to verify your account.",
+          });
+        }
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
@@ -56,9 +66,11 @@ const AuthForm = () => {
         if (signInError) throw signInError;
       }
     } catch (err) {
-      console.error("Auth error:", err); // Debug log
-      if (err instanceof Error) {
+      console.error("Auth error:", err);
+      if (err instanceof AuthError) {
         setError(err.message);
+      } else {
+        setError("An unexpected error occurred");
       }
     } finally {
       setIsSubmitting(false);
