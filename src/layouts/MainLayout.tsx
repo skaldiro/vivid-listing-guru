@@ -1,12 +1,12 @@
-import { NavBar } from "@/components/NavBar";
-import { Toaster } from "@/components/ui/toaster";
+import NavBar from "@/components/NavBar";
+import { Outlet } from "react-router-dom";
 
-export const MainLayout = ({ children }: { children: React.ReactNode }) => {
+const MainLayout = () => {
   return (
     <div className="main-layout">
       <NavBar />
-      <main className="main-container">
-        {children}
+      <main className="main-container max-w-7xl mx-auto px-4 py-8">
+        <Outlet />
         <p className="mt-8 text-sm text-gray-500 italic">
           Due to the nature of AI, extra details or inaccuracies may sometimes appear in generated descriptions. 
           Please ensure that all of the information in the generated description is accurate to your listing and 
@@ -14,7 +14,8 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
           information generated in listing descriptions.
         </p>
       </main>
-      <Toaster />
     </div>
   );
 };
+
+export { MainLayout };
