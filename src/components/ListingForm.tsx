@@ -1,13 +1,8 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Loader2 } from "lucide-react";
-import { BasicInfoStep } from "./listing/BasicInfoStep";
-import { PropertyDetailsStep } from "./listing/PropertyDetailsStep";
-import { AdditionalDetailsStep } from "./listing/AdditionalDetailsStep";
-import { StepIndicator } from "./listing/StepIndicator";
+import { FormSteps } from "./listing/FormSteps";
 
 interface LocationState {
   prefill?: {
@@ -188,71 +183,15 @@ const ListingForm = () => {
         <p className="text-gray-600">Fill in the details below to generate your listing</p>
       </div>
 
-      <StepIndicator currentStep={step} totalSteps={3} />
-
-      <div className="bg-white rounded-lg shadow-sm border p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {step === 1 && (
-            <>
-              <BasicInfoStep 
-                formData={formData} 
-                handleInputChange={handleInputChange} 
-              />
-              <Button 
-                className="w-full mt-6"
-                onClick={() => setStep(2)}
-                disabled={!formData.title || !formData.listingType || !formData.propertyType}
-              >
-                Next Step
-              </Button>
-            </>
-          )}
-
-          {step === 2 && (
-            <>
-              <PropertyDetailsStep 
-                formData={formData} 
-                handleInputChange={handleInputChange} 
-              />
-              <div className="flex justify-between gap-4 mt-6">
-                <Button variant="outline" onClick={() => setStep(1)}>Previous</Button>
-                <Button 
-                  onClick={() => setStep(3)}
-                  disabled={!formData.location}
-                >
-                  Next Step
-                </Button>
-              </div>
-            </>
-          )}
-
-          {step === 3 && (
-            <>
-              <AdditionalDetailsStep 
-                formData={formData} 
-                handleInputChange={handleInputChange}
-                handleImageUpload={handleImageUpload}
-              />
-              <div className="flex justify-between gap-4 mt-6">
-                <Button variant="outline" onClick={() => setStep(2)}>Previous</Button>
-                <Button 
-                  onClick={handleSubmit}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    "Generate Listing"
-                  )}
-                </Button>
-              </div>
-            </>
-          )}
-        </form>
-      </div>
+      <FormSteps
+        step={step}
+        formData={formData}
+        isLoading={isLoading}
+        handleInputChange={handleInputChange}
+        handleImageUpload={handleImageUpload}
+        handleSubmit={handleSubmit}
+        setStep={setStep}
+      />
     </div>
   );
 };

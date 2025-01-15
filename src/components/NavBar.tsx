@@ -39,28 +39,28 @@ const NavBar = () => {
 
   const NavItems = ({ onItemClick }: { onItemClick?: () => void }) => (
     <>
-      <NavigationMenuItem>
+      <NavigationMenuItem className="w-full">
         <NavigationMenuLink
-          className={navigationMenuTriggerStyle()}
+          className={`${navigationMenuTriggerStyle()} w-full justify-start`}
           onClick={() => {
             navigate("/generate");
             onItemClick?.();
           }}
         >
-          <PlusCircle className="h-4 w-4 mr-2 md:hidden" />
+          <PlusCircle className="h-4 w-4 mr-2" />
           <span className="hidden md:inline">Generate Listing</span>
           <span className="md:hidden">Generate</span>
         </NavigationMenuLink>
       </NavigationMenuItem>
-      <NavigationMenuItem>
+      <NavigationMenuItem className="w-full">
         <NavigationMenuLink
-          className={navigationMenuTriggerStyle()}
+          className={`${navigationMenuTriggerStyle()} w-full justify-start`}
           onClick={() => {
             navigate("/listings");
             onItemClick?.();
           }}
         >
-          <List className="h-4 w-4 mr-2 md:hidden" />
+          <List className="h-4 w-4 mr-2" />
           <span className="hidden md:inline">Listings</span>
           <span className="md:hidden">List</span>
         </NavigationMenuLink>
@@ -95,9 +95,9 @@ const NavBar = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px]">
-                <div className="flex flex-col space-y-4 mt-4">
+                <div className="flex flex-col space-y-6 mt-4">
                   <NavigationMenu>
-                    <NavigationMenuList className="flex-col items-start space-y-2">
+                    <NavigationMenuList className="flex-col items-start space-y-6">
                       <NavItems onItemClick={() => setIsOpen(false)} />
                     </NavigationMenuList>
                   </NavigationMenu>
