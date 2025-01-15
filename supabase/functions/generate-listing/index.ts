@@ -38,7 +38,12 @@ serve(async (req) => {
       2. A concise summary for preview cards (short_summary)
       3. A list of 5 key selling points (key_features)
 
-      Format the response as JSON with these exact keys: full_description, short_summary, key_features`
+      Return your response in the following JSON format:
+      {
+        "full_description": "your full description here",
+        "short_summary": "your short summary here",
+        "key_features": ["feature 1", "feature 2", "feature 3", "feature 4", "feature 5"]
+      }`
 
     console.log('Sending request to OpenAI');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -50,9 +55,10 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are a professional real estate copywriter skilled in creating compelling property listings.' },
+          { role: 'system', content: 'You are a professional real estate copywriter. Always respond with valid JSON.' },
           { role: 'user', content: prompt }
         ],
+        response_format: { type: "json_object" }
       }),
     });
 
@@ -63,8 +69,20 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('Received response from OpenAI');
-    const generatedContent = JSON.parse(data.choices[0].message.content);
+    console.log('Received response from OpenAI:', data);
+    
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from OpenAI');
+    }
+
+    let generatedContent;
+    try {
+      generatedContent = JSON.parse(data.choices[0].message.content);
+      console.log('Parsed generated content:', generatedContent);
+    } catch (error) {
+      console.error('Error parsing OpenAI response:', error);
+      throw new Error('Failed to parse OpenAI response');
+    }
 
     console.log('Updating listing in database');
     const { error: updateError } = await supabase
