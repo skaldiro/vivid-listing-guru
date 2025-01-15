@@ -5,16 +5,44 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { ChartBarIcon, Mail } from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
-  const { data: profile, isLoading } = useQuery({
+  // Check auth state on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error || !session) {
+        console.error("Auth error:", error);
+        navigate("/auth");
+        return;
+      }
+    };
+
+    checkAuth();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate("/auth");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  const { data: profile, isLoading, error: profileError } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
 
       const { data, error } = await supabase
         .from('profiles')
@@ -22,17 +50,33 @@ const Settings = () => {
         .eq('id', user.id)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Profile fetch error:", error);
+        throw error;
+      }
       return data;
+    },
+    retry: false,
+    onError: (error) => {
+      console.error("Profile query error:", error);
+      toast({
+        title: "Error loading profile",
+        description: "Please try signing in again",
+        variant: "destructive"
+      });
+      navigate("/auth");
     }
   });
 
   const updateEmailNotifications = useMutation({
     mutationFn: async (checked: boolean) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
       const { error } = await supabase
         .from('profiles')
         .update({ email_notifications: checked })
-        .eq('id', profile?.id);
+        .eq('id', user.id);
 
       if (error) throw error;
       return checked;
@@ -45,6 +89,7 @@ const Settings = () => {
       });
     },
     onError: (error: Error) => {
+      console.error("Update error:", error);
       toast({
         title: "Error updating settings",
         description: error.message,
@@ -55,6 +100,10 @@ const Settings = () => {
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-96">Loading...</div>;
+  }
+
+  if (profileError || !profile) {
+    return null; // The error is handled in the query's onError callback
   }
 
   return (
