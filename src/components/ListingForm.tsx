@@ -32,7 +32,7 @@ const ListingForm = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container max-w-6xl mx-auto px-4 py-8">
+      <div className="w-full max-w-[1400px] mx-auto px-6 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold mb-2">
             {prefillData ? "Regenerate Listing" : "Create New Listing"}
