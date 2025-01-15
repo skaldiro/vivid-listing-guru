@@ -80,7 +80,10 @@ serve(async (req) => {
       ` : ''}
     `;
 
-    // During testing, always send to the user's own email
+    // During development, always send to the verified email
+    const isDevelopment = true; // You can make this dynamic based on environment later
+    const toEmail = isDevelopment ? 'skaldiro@gmail.com' : listing.profiles.email;
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -88,8 +91,8 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'onboarding@resend.dev', // Using Resend's testing domain
-        to: [listing.profiles.email],
+        from: 'onboarding@resend.dev',
+        to: [toEmail],
         subject: `Your Listing is Ready! - ${listing.title}`,
         html: emailHtml,
       }),
