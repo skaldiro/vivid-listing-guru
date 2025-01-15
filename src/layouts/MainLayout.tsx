@@ -33,17 +33,27 @@ export const MainLayout = () => {
   }
 
   return (
-    <div className="main-layout">
+    <div className="main-layout flex flex-col min-h-screen">
       <NavBar />
-      <main className="main-container max-w-7xl mx-auto px-4 py-8">
+      <main className="flex-1 main-container">
         <Outlet />
-        <p className="mt-8 text-sm text-gray-500 italic">
+      </main>
+      <div className="mt-auto px-8 py-6 space-y-4">
+        <p className="text-sm text-gray-500 italic">
           Due to the nature of AI, extra details or inaccuracies may sometimes appear in generated descriptions. 
           Please ensure that all of the information in the generated description is accurate to your listing and 
           edit as necessary before using in your particulars. Electric AI takes no responsibility in any inaccurate 
           information generated in listing descriptions.
         </p>
-      </main>
+        <div className="space-y-1">
+          <p className="text-sm text-gray-500">
+            By using Electric AI you agree to our Terms & Conditions
+          </p>
+          <p className="text-sm text-gray-500">
+            © 2024 Electric AI
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
