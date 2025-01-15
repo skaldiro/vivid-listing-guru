@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AuthLayout from "./layouts/AuthLayout";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
+import Listings from "./pages/Listings";
+import Settings from "./pages/Settings";
+import ListingForm from "./components/ListingForm";
 
 const queryClient = new QueryClient();
 
@@ -19,9 +22,9 @@ const App = () => (
           <Route path="/auth" element={<AuthLayout />} />
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/generate" element={<div>Generate Listing</div>} />
-            <Route path="/listings" element={<div>Listings</div>} />
-            <Route path="/settings" element={<div>Settings</div>} />
+            <Route path="/generate" element={<ListingForm />} />
+            <Route path="/listings" element={<Listings />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
         </Routes>
       </BrowserRouter>
