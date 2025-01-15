@@ -1,13 +1,9 @@
-import { Auth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AuthError } from "@supabase/supabase-js";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { AuthFormFields } from "./auth/AuthFormFields";
+import { AuthSubmitButton } from "./auth/AuthSubmitButton";
 
 const AuthForm = () => {
   const [error, setError] = useState<string | null>(null);
@@ -17,34 +13,6 @@ const AuthForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [cooldownEndTime, setCooldownEndTime] = useState<Date | null>(null);
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'USER_UPDATED' || event === 'SIGNED_IN') {
-        setError(null);
-      }
-      if (event === 'SIGNED_OUT') {
-        setError(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (cooldownEndTime) {
-      timer = setInterval(() => {
-        if (new Date() >= cooldownEndTime) {
-          setCooldownEndTime(null);
-          setIsSubmitting(false);
-          setError(null);
-        }
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [cooldownEndTime]);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -62,10 +30,10 @@ const AuthForm = () => {
     e.preventDefault();
     setError(null);
 
-    if (!validateForm()) return;
-    if (isSubmitting) return;
+    if (!validateForm() || isSubmitting) return;
 
     setIsSubmitting(true);
+    console.log("Submitting form...", { email, isSignUp }); // Debug log
 
     try {
       if (isSignUp) {
@@ -88,48 +56,13 @@ const AuthForm = () => {
         if (signInError) throw signInError;
       }
     } catch (err) {
+      console.error("Auth error:", err); // Debug log
       if (err instanceof Error) {
-        const errorMessage = getErrorMessage(err as AuthError);
-        setError(errorMessage);
-        
-        // Handle rate limiting
-        if ((err as AuthError).message.includes('rate_limit')) {
-          const waitSeconds = parseInt(err.message.match(/\d+/)?.[0] || '60');
-          const endTime = new Date(Date.now() + waitSeconds * 1000);
-          setCooldownEndTime(endTime);
-          return;
-        }
+        setError(err.message);
       }
     } finally {
-      if (!cooldownEndTime) {
-        setIsSubmitting(false);
-      }
+      setIsSubmitting(false);
     }
-  };
-
-  const getErrorMessage = (error: AuthError) => {
-    if (error.message.includes('rate_limit')) {
-      const waitSeconds = parseInt(error.message.match(/\d+/)?.[0] || '60');
-      return `Please wait ${waitSeconds} seconds before trying again.`;
-    }
-
-    switch (error.message) {
-      case 'Invalid login credentials':
-        return 'Invalid email or password. Please check your credentials and try again.';
-      case 'Email not confirmed':
-        return 'Please verify your email address before signing in.';
-      case 'Invalid email or password':
-        return 'Invalid email or password. Please check your credentials and try again.';
-      default:
-        return error.message;
-    }
-  };
-
-  const getRemainingCooldownTime = () => {
-    if (!cooldownEndTime) return '';
-    const now = new Date();
-    const diff = Math.ceil((cooldownEndTime.getTime() - now.getTime()) / 1000);
-    return diff > 0 ? `(${diff}s)` : '';
   };
 
   return (
@@ -141,79 +74,28 @@ const AuthForm = () => {
 
       {error && (
         <Alert variant="destructive" className="mb-4">
-          <AlertDescription>
-            {error} {getRemainingCooldownTime()}
-          </AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {isSignUp && (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
-              <Input
-                id="fullName"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                disabled={isSubmitting}
-                placeholder="John Doe"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="agencyName">Agency Name</Label>
-              <Input
-                id="agencyName"
-                type="text"
-                value={agencyName}
-                onChange={(e) => setAgencyName(e.target.value)}
-                required
-                disabled={isSubmitting}
-                placeholder="Real Estate Agency"
-              />
-            </div>
-          </>
-        )}
-        <div className="space-y-2">
-          <Label htmlFor="email">Email address</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            disabled={isSubmitting}
-            placeholder="you@example.com"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            disabled={isSubmitting}
-            placeholder="••••••••"
-          />
-        </div>
-        <Button 
-          type="submit" 
-          className="w-full"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isSignUp ? "Signing up..." : "Signing in..."}
-            </>
-          ) : (
-            isSignUp ? "Sign up" : "Sign in"
-          )}
-        </Button>
+        <AuthFormFields
+          isSignUp={isSignUp}
+          fullName={fullName}
+          setFullName={setFullName}
+          agencyName={agencyName}
+          setAgencyName={setAgencyName}
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          isSubmitting={isSubmitting}
+        />
+
+        <AuthSubmitButton 
+          isSignUp={isSignUp} 
+          isSubmitting={isSubmitting} 
+        />
       </form>
 
       <div className="mt-4 text-center">
