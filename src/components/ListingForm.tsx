@@ -17,7 +17,6 @@ interface LocationState {
     bedrooms: string;
     bathrooms: string;
     location: string;
-    price: string;
     standoutFeatures: string;
     additionalDetails: string;
     generationInstructions: string;
@@ -39,7 +38,6 @@ const ListingForm = () => {
     bedrooms: prefillData?.bedrooms || "",
     bathrooms: prefillData?.bathrooms || "",
     location: prefillData?.location || "",
-    price: prefillData?.price || "",
     standoutFeatures: prefillData?.standoutFeatures || "",
     additionalDetails: prefillData?.additionalDetails || "",
     generationInstructions: prefillData?.generationInstructions || "",
@@ -104,7 +102,6 @@ const ListingForm = () => {
           bedrooms: parseInt(formData.bedrooms),
           bathrooms: parseInt(formData.bathrooms),
           location: formData.location,
-          price: parseFloat(formData.price),
           standout_features: formData.standoutFeatures,
           additional_details: formData.additionalDetails,
           generation_instructions: formData.generationInstructions,
@@ -205,7 +202,7 @@ const ListingForm = () => {
                 <Button variant="outline" onClick={() => setStep(1)}>Previous</Button>
                 <Button 
                   onClick={() => setStep(3)}
-                  disabled={!formData.location || !formData.price}
+                  disabled={!formData.location}
                 >
                   Next Step
                 </Button>

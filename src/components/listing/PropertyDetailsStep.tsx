@@ -6,7 +6,6 @@ interface PropertyDetailsStepProps {
     bedrooms: string;
     bathrooms: string;
     location: string;
-    price: string;
   };
   handleInputChange: (field: string, value: string) => void;
 }
@@ -44,17 +43,6 @@ export const PropertyDetailsStep = ({ formData, handleInputChange }: PropertyDet
           value={formData.location}
           onChange={(e) => handleInputChange("location", e.target.value)}
           placeholder="Property location"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="price">Price</Label>
-        <Input 
-          id="price"
-          type="number"
-          value={formData.price}
-          onChange={(e) => handleInputChange("price", e.target.value)}
-          placeholder="Property price"
         />
       </div>
     </div>

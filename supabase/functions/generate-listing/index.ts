@@ -16,7 +16,7 @@ serve(async (req) => {
     const requestData = await req.json();
     console.log('Request data:', requestData);
 
-    const { listingId, title, listingType, propertyType, bedrooms, bathrooms, location, standoutFeatures, additionalDetails } = requestData;
+    const { listingId, listingType, propertyType, bedrooms, bathrooms, location, standoutFeatures, additionalDetails } = requestData;
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
