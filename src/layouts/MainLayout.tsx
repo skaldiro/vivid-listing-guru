@@ -37,12 +37,20 @@ export const MainLayout = () => {
       <NavBar />
       <main className="main-container max-w-7xl mx-auto px-4 py-8">
         <Outlet />
-        <p className="mt-8 text-sm text-gray-500 italic">
-          Due to the nature of AI, extra details or inaccuracies may sometimes appear in generated descriptions. 
-          Please ensure that all of the information in the generated description is accurate to your listing and 
-          edit as necessary before using in your particulars. Electric AI takes no responsibility in any inaccurate 
-          information generated in listing descriptions.
-        </p>
+        <div className="mt-8 space-y-2">
+          <p className="text-sm text-gray-500 italic">
+            Due to the nature of AI, extra details or inaccuracies may sometimes appear in generated descriptions. 
+            Please ensure that all of the information in the generated description is accurate to your listing and 
+            edit as necessary before using in your particulars. Electric AI takes no responsibility in any inaccurate 
+            information generated in listing descriptions.
+          </p>
+          <p className="text-sm text-gray-500">
+            By using Electric AI you agree to our Terms & Conditions
+          </p>
+          <p className="text-sm text-gray-500">
+            © 2025 Electric AI
+          </p>
+        </div>
       </main>
     </div>
   );
