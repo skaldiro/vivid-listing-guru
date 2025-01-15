@@ -57,7 +57,9 @@ serve(async (req) => {
                 },
                 ...listingImages.map(img => ({
                   type: 'image_url',
-                  image_url: img.image_url,
+                  image_url: {
+                    url: img.image_url
+                  }
                 })),
               ],
             },
