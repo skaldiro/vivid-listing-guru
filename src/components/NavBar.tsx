@@ -94,8 +94,8 @@ const NavBar = () => {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px]">
                 <div className="flex flex-col space-y-6 mt-4">
-                  <NavigationMenu>
-                    <NavigationMenuList className="flex-col items-start space-y-4">
+                  <NavigationMenu className="w-full">
+                    <NavigationMenuList className="flex flex-col w-full space-y-2">
                       <NavItems onItemClick={() => setIsOpen(false)} />
                     </NavigationMenuList>
                   </NavigationMenu>
