@@ -36,7 +36,7 @@ export const ListingInputs = ({ listing }: ListingInputsProps) => {
               <p className="text-sm font-medium">Bathrooms</p>
               <p className="text-gray-600">{listing.bathrooms}</p>
             </div>
-            {listing.standout_features && (
+            {listing.standout_features && listing.standout_features.length > 0 && (
               <div>
                 <p className="text-sm font-medium">Standout Features</p>
                 <div className="flex flex-wrap gap-1 mt-1">

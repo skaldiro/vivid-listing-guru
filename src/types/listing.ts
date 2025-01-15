@@ -7,7 +7,7 @@ export interface Listing {
   bedrooms: number;
   bathrooms: number;
   location: string;
-  standout_features: string;
+  standout_features: string[];
   additional_details: string;
   generation_instructions: string;
   full_description: string;

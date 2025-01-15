@@ -17,7 +17,7 @@ interface LocationState {
     bedrooms: string;
     bathrooms: string;
     location: string;
-    standoutFeatures: string;
+    standoutFeatures: string[];
     additionalDetails: string;
     generationInstructions: string;
   };
@@ -38,13 +38,13 @@ const ListingForm = () => {
     bedrooms: prefillData?.bedrooms || "",
     bathrooms: prefillData?.bathrooms || "",
     location: prefillData?.location || "",
-    standoutFeatures: prefillData?.standoutFeatures || "",
+    standoutFeatures: prefillData?.standoutFeatures || [],
     additionalDetails: prefillData?.additionalDetails || "",
     generationInstructions: prefillData?.generationInstructions || "",
     images: [] as File[]
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
