@@ -50,7 +50,6 @@ export type Database = {
           key_features: string[] | null
           listing_type: string
           location: string
-          price: number | null
           property_type: string
           short_summary: string | null
           standout_features: string | null
@@ -69,7 +68,6 @@ export type Database = {
           key_features?: string[] | null
           listing_type: string
           location: string
-          price?: number | null
           property_type: string
           short_summary?: string | null
           standout_features?: string | null
@@ -88,7 +86,6 @@ export type Database = {
           key_features?: string[] | null
           listing_type?: string
           location?: string
-          price?: number | null
           property_type?: string
           short_summary?: string | null
           standout_features?: string | null

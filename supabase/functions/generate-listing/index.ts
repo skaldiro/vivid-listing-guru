@@ -7,7 +7,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -17,24 +16,69 @@ serve(async (req) => {
     const requestData = await req.json();
     console.log('Request data:', requestData);
 
-    const { listingId, title, listingType, propertyType, bedrooms, bathrooms, location, price, standoutFeatures, additionalDetails } = requestData;
+    const { listingId, title, listingType, propertyType, bedrooms, bathrooms, location, standoutFeatures, additionalDetails } = requestData;
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
+    // Get the images for the listing
+    const { data: images } = await supabase.storage
+      .from('listing-images')
+      .list(listingId.toString());
+
+    let imageAnalysis = '';
+    if (images && images.length > 0) {
+      const imageUrls = images.map(image => {
+        const { data } = supabase.storage
+          .from('listing-images')
+          .getPublicUrl(`${listingId}/${image.name}`);
+        return data.publicUrl;
+      });
+
+      // Analyze images with GPT-4 Vision
+      const imageAnalysisResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: 'Analyze these property images and describe the key visual features and amenities you can see. Focus on architectural details, condition, design elements, and any standout features.',
+                },
+                ...imageUrls.map(url => ({
+                  type: 'image_url',
+                  image_url: url,
+                })),
+              ],
+            },
+          ],
+        }),
+      });
+
+      const analysisData = await imageAnalysisResponse.json();
+      imageAnalysis = analysisData.choices[0].message.content;
+    }
+
     const prompt = `Create a compelling property listing for the following property:
-      Title: ${title}
       Type: ${listingType} - ${propertyType}
       Details: ${bedrooms} bedrooms, ${bathrooms} bathrooms
       Location: ${location}
-      Price: £${price}
       Key Features: ${standoutFeatures}
       Additional Information: ${additionalDetails}
+      
+      Image Analysis: ${imageAnalysis}
 
       Please provide:
-      1. A professional and engaging full description (full_description)
+      1. A professional and engaging full description that incorporates details from both the provided information and image analysis (full_description)
       2. A concise summary for preview cards (short_summary)
       3. A list of 5 key selling points (key_features)
 
@@ -53,7 +97,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: 'You are a professional real estate copywriter. Always respond with valid JSON.' },
           { role: 'user', content: prompt }
