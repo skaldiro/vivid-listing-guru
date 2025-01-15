@@ -2,13 +2,22 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import {
   NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
   NavigationMenuList,
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Settings, LogOut, User, Menu, PlusCircle, List } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
-import NavItems from "./nav/NavItems";
-import MobileNav from "./nav/MobileNav";
-import UserMenu from "./nav/UserMenu";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -16,43 +25,46 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = async () => {
-    try {
-      // First check if we have a valid session
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // If no session exists, just redirect to auth
-        navigate("/auth");
-        return;
-      }
-
-      // Proceed with logout
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("Logout error:", error);
-        toast({
-          title: "Error signing out",
-          description: error.message,
-          variant: "destructive",
-        });
-        
-        // If we get a user_not_found error, force clear the session
-        if (error.message.includes("user_not_found")) {
-          await supabase.auth.signOut({ scope: 'local' });
-          navigate("/auth");
-        }
-      } else {
-        // Clear any local storage items if needed
-        localStorage.removeItem('supabase.auth.token');
-        navigate("/auth");
-      }
-    } catch (error: any) {
-      console.error("Unexpected error during logout:", error);
-      // Force a local signout in case of any errors
-      await supabase.auth.signOut({ scope: 'local' });
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      toast({
+        title: "Error signing out",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
       navigate("/auth");
     }
   };
+
+  const NavItems = ({ onItemClick }: { onItemClick?: () => void }) => (
+    <>
+      <NavigationMenuItem className="w-full">
+        <NavigationMenuLink
+          className={`${navigationMenuTriggerStyle()} w-full justify-start`}
+          onClick={() => {
+            navigate("/generate");
+            onItemClick?.();
+          }}
+        >
+          <PlusCircle className="h-4 w-4 mr-2" />
+          <span>Generate</span>
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+      <NavigationMenuItem className="w-full">
+        <NavigationMenuLink
+          className={`${navigationMenuTriggerStyle()} w-full justify-start`}
+          onClick={() => {
+            navigate("/listings");
+            onItemClick?.();
+          }}
+        >
+          <List className="h-4 w-4 mr-2" />
+          <span>Listings</span>
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+    </>
+  );
 
   return (
     <div className="border-b bg-white">
@@ -72,15 +84,64 @@ const NavBar = () => {
 
         <div className="ml-auto flex items-center space-x-4">
           <div className="md:hidden">
-            <MobileNav 
-              isOpen={isOpen} 
-              setIsOpen={setIsOpen} 
-              handleLogout={handleLogout} 
-            />
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px]">
+                <nav className="flex flex-col space-y-4 mt-4">
+                  <NavigationMenu className="w-full">
+                    <NavigationMenuList className="flex flex-col w-full space-y-2">
+                      <NavItems onItemClick={() => setIsOpen(false)} />
+                    </NavigationMenuList>
+                  </NavigationMenu>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start" 
+                    onClick={() => {
+                      navigate("/settings");
+                      setIsOpen(false);
+                    }}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start" 
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
 
           <div className="hidden md:block">
-            <UserMenu handleLogout={handleLogout} />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/settings")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
