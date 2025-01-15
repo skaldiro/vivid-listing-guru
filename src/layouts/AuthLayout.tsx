@@ -15,8 +15,12 @@ const AuthLayout = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
-      <AuthForm />
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1 className="auth-title">Welcome to Electric AI</h1>
+        <p className="auth-subtitle">Generate amazing property listings in seconds</p>
+        <AuthForm />
+      </div>
     </div>
   );
 };

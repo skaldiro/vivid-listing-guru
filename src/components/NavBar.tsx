@@ -30,14 +30,14 @@ const NavBar = () => {
         variant: "destructive",
       });
     } else {
-      navigate("/");
+      navigate("/auth");
     }
   };
 
   return (
-    <div className="border-b">
-      <div className="flex h-16 items-center px-4 container mx-auto">
-        <div className="mr-8 font-bold text-xl cursor-pointer" onClick={() => navigate("/")}>
+    <div className="border-b bg-white">
+      <div className="flex h-16 items-center px-4 max-w-7xl mx-auto">
+        <div className="mr-8 font-semibold text-xl cursor-pointer" onClick={() => navigate("/")}>
           Electric AI
         </div>
         <NavigationMenu className="mx-6">
@@ -60,7 +60,7 @@ const NavBar = () => {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">

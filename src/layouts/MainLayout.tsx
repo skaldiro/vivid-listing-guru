@@ -15,9 +15,9 @@ const MainLayout = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="main-layout">
       <NavBar />
-      <main className="container mx-auto px-4 py-8">
+      <main className="main-container">
         <Outlet />
       </main>
     </div>
