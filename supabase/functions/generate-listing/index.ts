@@ -7,12 +7,17 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { listingId, title, listingType, propertyType, bedrooms, bathrooms, location, price, standoutFeatures, additionalDetails } = await req.json()
+    console.log('Received request to generate-listing function');
+    const requestData = await req.json();
+    console.log('Request data:', requestData);
+
+    const { listingId, title, listingType, propertyType, bedrooms, bathrooms, location, price, standoutFeatures, additionalDetails } = requestData;
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -35,6 +40,7 @@ serve(async (req) => {
 
       Format the response as JSON with these exact keys: full_description, short_summary, key_features`
 
+    console.log('Sending request to OpenAI');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -50,9 +56,17 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
     const data = await response.json();
+    console.log('Received response from OpenAI');
     const generatedContent = JSON.parse(data.choices[0].message.content);
 
+    console.log('Updating listing in database');
     const { error: updateError } = await supabase
       .from('listings')
       .update({
@@ -62,8 +76,12 @@ serve(async (req) => {
       })
       .eq('id', listingId);
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error('Database update error:', updateError);
+      throw updateError;
+    }
 
+    console.log('Successfully generated and updated listing');
     return new Response(
       JSON.stringify({ message: 'Listing generated successfully' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
