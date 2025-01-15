@@ -35,12 +35,15 @@ const NavBar = () => {
     }
   };
 
-  const NavItems = () => (
+  const NavItems = ({ onItemClick }: { onItemClick?: () => void }) => (
     <>
       <NavigationMenuItem>
         <NavigationMenuLink
           className={navigationMenuTriggerStyle()}
-          onClick={() => navigate("/generate")}
+          onClick={() => {
+            navigate("/generate");
+            onItemClick?.();
+          }}
         >
           <PlusCircle className="h-4 w-4 mr-2 md:hidden" />
           <span className="hidden md:inline">Generate Listing</span>
@@ -50,7 +53,10 @@ const NavBar = () => {
       <NavigationMenuItem>
         <NavigationMenuLink
           className={navigationMenuTriggerStyle()}
-          onClick={() => navigate("/listings")}
+          onClick={() => {
+            navigate("/listings");
+            onItemClick?.();
+          }}
         >
           <List className="h-4 w-4 mr-2 md:hidden" />
           <span className="hidden md:inline">Listings</span>
@@ -64,7 +70,7 @@ const NavBar = () => {
     <div className="border-b bg-white">
       <div className="flex h-16 items-center px-4 max-w-7xl mx-auto">
         <div 
-          className="mr-8 font-semibold text-xl cursor-pointer" 
+          className="font-semibold text-xl cursor-pointer" 
           onClick={() => navigate("/")}
         >
           Electric AI
@@ -77,43 +83,49 @@ const NavBar = () => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="ml-2">
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <div className="flex flex-col space-y-4 mt-4">
-                <NavigationMenu>
-                  <NavigationMenuList className="flex-col space-y-2">
-                    <NavItems />
-                  </NavigationMenuList>
-                </NavigationMenu>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start" 
-                  onClick={() => navigate("/settings")}
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  className="w-full justify-start" 
-                  onClick={handleLogout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-
         <div className="ml-auto flex items-center space-x-4">
+          {/* Mobile Navigation */}
+          <div className="md:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px]">
+                <div className="flex flex-col space-y-4 mt-4">
+                  <NavigationMenu>
+                    <NavigationMenuList className="flex-col items-start space-y-2">
+                      <NavItems onItemClick={() => document.querySelector('[data-radix-collection-item]')?.click()} />
+                    </NavigationMenuList>
+                  </NavigationMenu>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start" 
+                    onClick={() => {
+                      navigate("/settings");
+                      document.querySelector('[data-radix-collection-item]')?.click();
+                    }}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start" 
+                    onClick={() => {
+                      handleLogout();
+                      document.querySelector('[data-radix-collection-item]')?.click();
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
           <div className="hidden md:block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

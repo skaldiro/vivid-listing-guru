@@ -62,16 +62,18 @@ ${listing.short_summary}`.trim();
           <Button
             variant="outline"
             onClick={copyToClipboard}
+            className="md:min-w-[120px]"
           >
-            <Copy className="h-4 w-4 mr-2" />
-            Copy Listing
+            <Copy className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Copy Listing</span>
           </Button>
           <Button
             variant="outline"
             onClick={handleRegenerate}
+            className="md:min-w-[120px]"
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Re-Generate
+            <RefreshCw className="h-4 w-4 md:mr-2" />
+            <span className="hidden md:inline">Re-Generate</span>
           </Button>
         </div>
       </CardHeader>

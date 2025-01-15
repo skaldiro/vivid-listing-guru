@@ -153,7 +153,6 @@ const ListingForm = () => {
 
       if (emailError) {
         console.error('Error sending email:', emailError);
-        // Don't throw error here as the listing was still created successfully
       }
 
       toast({
@@ -161,9 +160,14 @@ const ListingForm = () => {
         description: "Your listing has been created and is being generated",
       });
 
-      // Navigate to listings page and scroll to top
-      navigate('/listings', { replace: true });
-      window.scrollTo(0, 0);
+      // Navigate to listings page with the new listing ID
+      navigate('/listings', { 
+        replace: true,
+        state: { newListing: true }
+      });
+      
+      // Scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
       toast({
         title: "Error creating listing",
