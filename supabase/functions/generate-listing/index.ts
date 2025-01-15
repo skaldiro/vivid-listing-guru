@@ -1,5 +1,6 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,7 +9,7 @@ const corsHeaders = {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -16,16 +17,32 @@ serve(async (req) => {
     const requestData = await req.json();
     console.log('Request data:', requestData);
 
+    if (!requestData.listingId) {
+      throw new Error('Listing ID is required');
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+    );
+
+    // Get listing details including user_id
+    const { data: listing, error: listingError } = await supabase
+      .from('listings')
+      .select('user_id')
+      .eq('id', requestData.listingId)
+      .single();
+
+    if (listingError || !listing) {
+      console.error('Error fetching listing:', listingError);
+      throw new Error('Failed to fetch listing details');
+    }
 
     // Get user's agency name
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('agency_name')
-      .eq('id', requestData.user_id)
+      .eq('id', listing.user_id)
       .single();
 
     if (profileError) {
