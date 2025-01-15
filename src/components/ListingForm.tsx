@@ -95,10 +95,17 @@ const ListingForm = () => {
     setIsLoading(true);
 
     try {
+      // Get the current user's ID
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        throw new Error('You must be logged in to create a listing');
+      }
+
       // First, create the listing
       const { data: listing, error: listingError } = await supabase
         .from('listings')
-        .insert([{
+        .insert({
           title: formData.title,
           listing_type: formData.listingType,
           property_type: formData.propertyType,
@@ -108,8 +115,9 @@ const ListingForm = () => {
           price: parseFloat(formData.price),
           standout_features: formData.standoutFeatures,
           additional_details: formData.additionalDetails,
-          generation_instructions: formData.generationInstructions
-        }])
+          generation_instructions: formData.generationInstructions,
+          user_id: user.id
+        })
         .select()
         .single();
 
@@ -134,10 +142,10 @@ const ListingForm = () => {
 
           await supabase
             .from('listing_images')
-            .insert([{
+            .insert({
               listing_id: listing.id,
               image_url: publicUrl
-            }]);
+            });
         }
       }
 
