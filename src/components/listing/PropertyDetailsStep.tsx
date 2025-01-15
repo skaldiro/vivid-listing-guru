@@ -42,7 +42,7 @@ export const PropertyDetailsStep = ({ formData, handleInputChange }: PropertyDet
           id="location"
           value={formData.location}
           onChange={(e) => handleInputChange("location", e.target.value)}
-          placeholder="Property location"
+          placeholder="e.g. 'Notting Hill, London' - adding the location of the property will ensure that advantages of the location are included in the generated listing"
         />
       </div>
     </div>

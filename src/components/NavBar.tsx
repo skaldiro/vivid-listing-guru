@@ -60,7 +60,7 @@ const NavBar = () => {
           }}
         >
           <List className="h-4 w-4 mr-2" />
-          <span>List</span>
+          <span>Listings</span>
         </NavigationMenuLink>
       </NavigationMenuItem>
     </>
@@ -76,7 +76,6 @@ const NavBar = () => {
           Electric AI
         </div>
 
-        {/* Desktop Navigation */}
         <NavigationMenu className="hidden md:flex mx-6">
           <NavigationMenuList>
             <NavItems />
@@ -84,7 +83,6 @@ const NavBar = () => {
         </NavigationMenu>
 
         <div className="ml-auto flex items-center space-x-4">
-          {/* Mobile Navigation */}
           <div className="md:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>

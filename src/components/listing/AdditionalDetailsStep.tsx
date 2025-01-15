@@ -55,7 +55,7 @@ export const AdditionalDetailsStep = ({
         </div>
         <ScrollArea className="h-48 w-full border rounded-lg mt-2">
           <div className="p-4">
-            <p className="text-sm text-muted-foreground mb-2">Suggested Features:</p>
+            <p className="text-sm text-muted-foreground mb-2">Select all that apply:</p>
             <div className="flex flex-wrap gap-2">
               {STANDOUT_FEATURES.map(feature => (
                 <Badge
@@ -93,7 +93,7 @@ export const AdditionalDetailsStep = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="images">Upload Images</Label>
+        <Label htmlFor="images">Upload Images & Files</Label>
         <div className="flex items-center justify-center w-full">
           <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -102,7 +102,7 @@ export const AdditionalDetailsStep = ({
                 <span className="font-semibold">Click to upload</span> or drag and drop
               </p>
               <p className="text-xs text-gray-500">
-                PNG, JPG or WEBP (MAX. 2MB)
+                PNG, JPG or WEBP (MAX. 2MB, up to 10 files)
               </p>
             </div>
             <input
