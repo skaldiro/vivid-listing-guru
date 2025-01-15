@@ -104,28 +104,32 @@ serve(async (req) => {
       console.log('Image analysis:', imageAnalysis);
     }
 
-    const prompt = `Create a compelling property listing for ${profile.agency_name} with the following details:
-      Type: ${requestData.listingType} - ${requestData.propertyType}
-      Details: ${requestData.bedrooms} bedrooms, ${requestData.bathrooms} bathrooms
-      Location: ${requestData.location}
-      Key Features: ${requestData.standoutFeatures ? requestData.standoutFeatures.join(', ') : ''}
-      Additional Information: ${requestData.additionalDetails || ''}
-      
-      Image Analysis: ${imageAnalysis}
+    // Create a comprehensive prompt that includes all details
+    const prompt = `As a professional real estate copywriter for ${profile.agency_name}, create a compelling property listing with the following details:
 
-      Generation Instructions: ${requestData.generationInstructions || ''}
+Type: ${requestData.listingType} - ${requestData.propertyType}
+Details: ${requestData.bedrooms} bedrooms, ${requestData.bathrooms} bathrooms
+Location: ${requestData.location}
+Key Features: ${requestData.standoutFeatures ? requestData.standoutFeatures.join(', ') : ''}
 
-      Based on all the provided information, including the agency name, generation instructions, and image analysis, please provide:
-      1. A professional and engaging full description that incorporates all details
-      2. A concise summary for preview cards
-      3. A list of 5 key selling points
+Additional Information: ${requestData.additionalDetails || 'None provided'}
+Image Analysis: ${imageAnalysis}
 
-      Return your response in the following JSON format:
-      {
-        "full_description": "your full description here",
-        "short_summary": "your short summary here",
-        "key_features": ["feature 1", "feature 2", "feature 3", "feature 4", "feature 5"]
-      }`;
+Special Instructions: ${requestData.generationInstructions || 'None provided'}
+
+Please follow these specific generation instructions carefully: ${requestData.generationInstructions || 'Create a professional and engaging listing'}
+
+Based on all the provided information, including the agency name and specific instructions, please provide:
+1. A professional and engaging full description that incorporates all details
+2. A concise summary for preview cards (max 150 characters)
+3. A list of 5 key selling points
+
+Return your response in the following JSON format:
+{
+  "full_description": "your full description here",
+  "short_summary": "your short summary here",
+  "key_features": ["feature 1", "feature 2", "feature 3", "feature 4", "feature 5"]
+}`;
 
     console.log('Sending request to OpenAI with prompt:', prompt);
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
