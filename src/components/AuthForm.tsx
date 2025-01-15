@@ -7,6 +7,7 @@ import { AuthError } from "@supabase/supabase-js";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 const AuthForm = () => {
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +39,7 @@ const AuthForm = () => {
         if (new Date() >= cooldownEndTime) {
           setCooldownEndTime(null);
           setIsSubmitting(false);
+          setError(null);
         }
       }, 1000);
     }
@@ -157,6 +159,7 @@ const AuthForm = () => {
                 onChange={(e) => setFullName(e.target.value)}
                 required
                 disabled={isSubmitting}
+                placeholder="John Doe"
               />
             </div>
             <div className="space-y-2">
@@ -168,6 +171,7 @@ const AuthForm = () => {
                 onChange={(e) => setAgencyName(e.target.value)}
                 required
                 disabled={isSubmitting}
+                placeholder="Real Estate Agency"
               />
             </div>
           </>
@@ -181,6 +185,7 @@ const AuthForm = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={isSubmitting}
+            placeholder="you@example.com"
           />
         </div>
         <div className="space-y-2">
@@ -192,6 +197,7 @@ const AuthForm = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             disabled={isSubmitting}
+            placeholder="••••••••"
           />
         </div>
         <Button 
@@ -199,7 +205,14 @@ const AuthForm = () => {
           className="w-full"
           disabled={isSubmitting}
         >
-          {isSignUp ? "Sign up" : "Sign in"}
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {isSignUp ? "Signing up..." : "Signing in..."}
+            </>
+          ) : (
+            isSignUp ? "Sign up" : "Sign in"
+          )}
         </Button>
       </form>
 
