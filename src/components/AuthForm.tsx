@@ -23,8 +23,10 @@ const AuthForm = () => {
           },
         }}
         providers={[]}
+        view="sign_in"
+        showLinks={true}
         redirectTo={`${window.location.origin}/`}
-        magicLink={true}
+        onlyThirdPartyProviders={false}
       />
     </div>
   );
