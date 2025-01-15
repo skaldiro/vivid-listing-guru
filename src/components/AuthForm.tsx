@@ -15,6 +15,8 @@ const AuthForm = () => {
   const [agencyName, setAgencyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cooldownEndTime, setCooldownEndTime] = useState<Date | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -28,6 +30,19 @@ const AuthForm = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (cooldownEndTime) {
+      timer = setInterval(() => {
+        if (new Date() >= cooldownEndTime) {
+          setCooldownEndTime(null);
+          setIsSubmitting(false);
+        }
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [cooldownEndTime]);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -46,6 +61,9 @@ const AuthForm = () => {
     setError(null);
 
     if (!validateForm()) return;
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
 
     try {
       if (isSignUp) {
@@ -69,12 +87,30 @@ const AuthForm = () => {
       }
     } catch (err) {
       if (err instanceof Error) {
-        setError(getErrorMessage(err as AuthError));
+        const errorMessage = getErrorMessage(err as AuthError);
+        setError(errorMessage);
+        
+        // Handle rate limiting
+        if ((err as AuthError).message.includes('rate_limit')) {
+          const waitSeconds = parseInt(err.message.match(/\d+/)?.[0] || '60');
+          const endTime = new Date(Date.now() + waitSeconds * 1000);
+          setCooldownEndTime(endTime);
+          return;
+        }
+      }
+    } finally {
+      if (!cooldownEndTime) {
+        setIsSubmitting(false);
       }
     }
   };
 
   const getErrorMessage = (error: AuthError) => {
+    if (error.message.includes('rate_limit')) {
+      const waitSeconds = parseInt(error.message.match(/\d+/)?.[0] || '60');
+      return `Please wait ${waitSeconds} seconds before trying again.`;
+    }
+
     switch (error.message) {
       case 'Invalid login credentials':
         return 'Invalid email or password. Please check your credentials and try again.';
@@ -87,6 +123,13 @@ const AuthForm = () => {
     }
   };
 
+  const getRemainingCooldownTime = () => {
+    if (!cooldownEndTime) return '';
+    const now = new Date();
+    const diff = Math.ceil((cooldownEndTime.getTime() - now.getTime()) / 1000);
+    return diff > 0 ? `(${diff}s)` : '';
+  };
+
   return (
     <div className="w-full max-w-md mx-auto">
       <h1 className="text-2xl font-bold text-center mb-2">Welcome to Electric AI</h1>
@@ -96,7 +139,9 @@ const AuthForm = () => {
 
       {error && (
         <Alert variant="destructive" className="mb-4">
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>
+            {error} {getRemainingCooldownTime()}
+          </AlertDescription>
         </Alert>
       )}
 
@@ -111,6 +156,7 @@ const AuthForm = () => {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
+                disabled={isSubmitting}
               />
             </div>
             <div className="space-y-2">
@@ -121,6 +167,7 @@ const AuthForm = () => {
                 value={agencyName}
                 onChange={(e) => setAgencyName(e.target.value)}
                 required
+                disabled={isSubmitting}
               />
             </div>
           </>
@@ -133,6 +180,7 @@ const AuthForm = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={isSubmitting}
           />
         </div>
         <div className="space-y-2">
@@ -143,17 +191,26 @@ const AuthForm = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={isSubmitting}
           />
         </div>
-        <Button type="submit" className="w-full">
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={isSubmitting}
+        >
           {isSignUp ? "Sign up" : "Sign in"}
         </Button>
       </form>
 
       <div className="mt-4 text-center">
         <button
-          onClick={() => setIsSignUp(!isSignUp)}
+          onClick={() => {
+            setIsSignUp(!isSignUp);
+            setError(null);
+          }}
           className="text-sm text-blue-600 hover:underline"
+          disabled={isSubmitting}
         >
           {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
         </button>
