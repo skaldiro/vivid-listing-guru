@@ -6,9 +6,14 @@ import { ListingInputs } from "@/components/listings/ListingInputs";
 import { ListingContent } from "@/components/listings/ListingContent";
 import { Listing } from "@/types/listing";
 import { useState } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 const Listings = () => {
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const location = useLocation();
 
   const { data: listings, isLoading } = useQuery({
     queryKey: ['listings'],
@@ -24,10 +29,17 @@ const Listings = () => {
   });
 
   useEffect(() => {
-    if (listings && listings.length > 0 && !selectedListing) {
-      setSelectedListing(listings[0]);
+    if (listings && listings.length > 0) {
+      // If we just created a new listing, select it
+      if (location.state?.newListing) {
+        const newListing = listings[0];
+        setSelectedListing(newListing);
+        window.scrollTo(0, 0);
+      } else if (!selectedListing) {
+        setSelectedListing(listings[0]);
+      }
     }
-  }, [listings]);
+  }, [listings, location.state]);
 
   if (isLoading) {
     return (
@@ -39,14 +51,35 @@ const Listings = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <div className="grid grid-cols-12 gap-6 h-[calc(100vh-12rem)]">
-        <ListingSidebar 
-          listings={listings || []}
-          selectedListing={selectedListing}
-          onSelectListing={setSelectedListing}
-        />
+      <div className="lg:hidden mb-4">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon">
+              <Menu className="h-4 w-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+            <div className="h-full">
+              <ListingSidebar 
+                listings={listings || []}
+                selectedListing={selectedListing}
+                onSelectListing={setSelectedListing}
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="grid lg:grid-cols-12 gap-6">
+        <div className="hidden lg:block lg:col-span-4">
+          <ListingSidebar 
+            listings={listings || []}
+            selectedListing={selectedListing}
+            onSelectListing={setSelectedListing}
+          />
+        </div>
         
-        <div className="col-span-8">
+        <div className="lg:col-span-8">
           {selectedListing ? (
             <div className="space-y-6">
               <div className="flex justify-between items-center">

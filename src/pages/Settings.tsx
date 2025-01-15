@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,7 @@ import { ChartBarIcon, Mail } from "lucide-react";
 
 const Settings = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ['profile'],
@@ -26,25 +27,31 @@ const Settings = () => {
     }
   });
 
-  const handleEmailNotificationsChange = async (checked: boolean) => {
-    const { error } = await supabase
-      .from('profiles')
-      .update({ email_notifications: checked })
-      .eq('id', profile?.id);
+  const updateEmailNotifications = useMutation({
+    mutationFn: async (checked: boolean) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ email_notifications: checked })
+        .eq('id', profile?.id);
 
-    if (error) {
+      if (error) throw error;
+      return checked;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      toast({
+        title: "Success",
+        description: "Settings updated successfully"
+      });
+    },
+    onError: (error: Error) => {
       toast({
         title: "Error updating settings",
         description: error.message,
         variant: "destructive"
       });
-    } else {
-      toast({
-        title: "Success",
-        description: "Settings updated successfully"
-      });
     }
-  };
+  });
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-96">Loading...</div>;
@@ -54,7 +61,7 @@ const Settings = () => {
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-2xl font-semibold mb-6">Settings</h1>
       
-      <div className="grid gap-6">
+      <div className="grid gap-6 max-w-4xl">
         <Card>
           <CardHeader>
             <CardTitle>Profile Information</CardTitle>
@@ -108,7 +115,7 @@ const Settings = () => {
               <Switch
                 id="email-notifications"
                 checked={profile?.email_notifications}
-                onCheckedChange={handleEmailNotificationsChange}
+                onCheckedChange={(checked) => updateEmailNotifications.mutate(checked)}
               />
             </div>
           </CardContent>

@@ -146,12 +146,24 @@ const ListingForm = () => {
 
       if (generateError) throw generateError;
 
+      // Send email notification
+      const { error: emailError } = await supabase.functions.invoke('send-listing-email', {
+        body: { listingId: listing.id }
+      });
+
+      if (emailError) {
+        console.error('Error sending email:', emailError);
+        // Don't throw error here as the listing was still created successfully
+      }
+
       toast({
         title: "Success!",
         description: "Your listing has been created and is being generated",
       });
 
-      navigate('/listings');
+      // Navigate to listings page and scroll to top
+      navigate('/listings', { replace: true });
+      window.scrollTo(0, 0);
     } catch (error: any) {
       toast({
         title: "Error creating listing",
@@ -175,7 +187,7 @@ const ListingForm = () => {
       <StepIndicator currentStep={step} totalSteps={3} />
 
       <div className="bg-white rounded-lg shadow-sm border p-6">
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
           {step === 1 && (
             <>
               <BasicInfoStep 
