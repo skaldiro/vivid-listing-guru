@@ -12,39 +12,32 @@ export const MainLayout = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
-        // If there's no valid session, force logout and redirect
         if (!session) {
-          await supabase.auth.signOut();
+          console.log("No session found, redirecting to auth");
           setIsAuthenticated(false);
-          navigate('/auth');
           return;
         }
 
-        setIsAuthenticated(!!session);
+        setIsAuthenticated(true);
 
-        // Listen for auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
           console.log("Auth state change:", event);
           if (event === 'SIGNED_OUT' || !session) {
             setIsAuthenticated(false);
-            navigate('/auth');
           } else {
-            setIsAuthenticated(!!session);
+            setIsAuthenticated(true);
           }
         });
 
         return () => subscription.unsubscribe();
       } catch (error) {
         console.error("Auth error:", error);
-        // On any error, force logout and redirect
-        await supabase.auth.signOut();
         setIsAuthenticated(false);
-        navigate('/auth');
       }
     };
 
     checkAuth();
-  }, [navigate]);
+  }, []);
 
   // Show nothing while checking auth status
   if (isAuthenticated === null) {
