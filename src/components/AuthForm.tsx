@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
-import { AuthError } from "@supabase/supabase-js";
+import { AuthError, AuthApiError } from "@supabase/supabase-js";
 import { AuthFormFields } from "./auth/AuthFormFields";
 import { AuthSubmitButton } from "./auth/AuthSubmitButton";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +26,23 @@ const AuthForm = () => {
       return false;
     }
     return true;
+  };
+
+  const getErrorMessage = (error: AuthError) => {
+    if (error instanceof AuthApiError) {
+      switch (error.status) {
+        case 400:
+          if (error.message.includes("invalid_credentials")) {
+            return "Invalid email or password. Please check your credentials and try again.";
+          }
+          return "Invalid request. Please check your input and try again.";
+        case 422:
+          return "Invalid email format. Please enter a valid email address.";
+        default:
+          return error.message;
+      }
+    }
+    return "An unexpected error occurred. Please try again.";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,12 +80,13 @@ const AuthForm = () => {
           email,
           password
         });
+        
         if (signInError) throw signInError;
       }
     } catch (err) {
       console.error("Auth error:", err);
       if (err instanceof AuthError) {
-        setError(err.message);
+        setError(getErrorMessage(err));
       } else {
         setError("An unexpected error occurred");
       }
