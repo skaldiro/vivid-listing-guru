@@ -37,6 +37,10 @@ const AuthForm = () => {
           }
           return "Invalid request. Please check your input and try again.";
         case 422:
+          if (error.message.includes("already registered") || error.message.includes("already exists")) {
+            setIsSignUp(false); // Switch to sign in mode
+            return "This email is already registered. Please sign in instead.";
+          }
           return "Invalid email format. Please enter a valid email address.";
         default:
           return error.message;
