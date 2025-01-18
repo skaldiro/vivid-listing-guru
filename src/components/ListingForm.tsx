@@ -88,6 +88,29 @@ const ListingForm = () => {
         throw new Error('You must be logged in to create a listing');
       }
 
+      // First, check if the user has a profile
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        // If profile doesn't exist, create it
+        const { error: createProfileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            full_name: user.user_metadata.full_name || '',
+            agency_name: user.user_metadata.agency_name || 'Default Agency',
+            email: user.email
+          });
+
+        if (createProfileError) {
+          throw new Error('Failed to create user profile');
+        }
+      }
+
       const { data: listing, error: listingError } = await supabase
         .from('listings')
         .insert({
@@ -155,15 +178,14 @@ const ListingForm = () => {
         description: "Your listing has been created and is being generated",
       });
 
-      // Navigate to listings page with the new listing ID
       navigate('/listings', { 
         replace: true,
         state: { newListing: true }
       });
       
-      // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error: any) {
+      console.error('Error details:', error);
       toast({
         title: "Error creating listing",
         description: error.message,
