@@ -28,25 +28,31 @@ const AuthForm = () => {
     return true;
   };
 
-  const getErrorMessage = (error: AuthError) => {
-    if (error instanceof AuthApiError) {
-      switch (error.status) {
-        case 400:
-          if (error.message.includes("invalid_credentials")) {
-            return "Invalid email or password. Please check your credentials and try again.";
-          }
-          return "Invalid request. Please check your input and try again.";
-        case 422:
-          if (error.message.includes("already registered") || error.message.includes("already exists")) {
-            setIsSignUp(false); // Switch to sign in mode
-            return "This email is already registered. Please sign in instead.";
-          }
-          return "Invalid email format. Please enter a valid email address.";
-        default:
-          return error.message;
+  const handleAuthResponse = (error: AuthError | null) => {
+    if (error) {
+      console.error("Auth error details:", error);
+      if (error instanceof AuthApiError) {
+        switch (error.status) {
+          case 400:
+            if (error.message.includes("invalid_credentials")) {
+              return "Invalid email or password. Please check your credentials and try again.";
+            }
+            return "Invalid request. Please check your input and try again.";
+          case 422:
+            if (error.message.includes("already registered") || error.message.includes("already exists")) {
+              setIsSignUp(false);
+              return "This email is already registered. Please sign in instead.";
+            }
+            return "Invalid email format. Please enter a valid email address.";
+          case 401:
+            return "Authentication failed. Please check your credentials.";
+          default:
+            return error.message;
+        }
       }
+      return "An unexpected error occurred. Please try again.";
     }
-    return "An unexpected error occurred. Please try again.";
+    return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,7 +77,11 @@ const AuthForm = () => {
           }
         });
 
-        if (signUpError) throw signUpError;
+        const errorMessage = handleAuthResponse(signUpError);
+        if (errorMessage) {
+          setError(errorMessage);
+          return;
+        }
 
         if (data.user) {
           toast({
@@ -80,20 +90,27 @@ const AuthForm = () => {
           });
         }
       } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password
         });
         
-        if (signInError) throw signInError;
+        const errorMessage = handleAuthResponse(signInError);
+        if (errorMessage) {
+          setError(errorMessage);
+          return;
+        }
+
+        if (data.user) {
+          toast({
+            title: "Welcome back!",
+            description: "Successfully signed in.",
+          });
+        }
       }
     } catch (err) {
-      console.error("Auth error:", err);
-      if (err instanceof AuthError) {
-        setError(getErrorMessage(err));
-      } else {
-        setError("An unexpected error occurred");
-      }
+      console.error("Unexpected auth error:", err);
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
