@@ -19,15 +19,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/auth" element={<AuthLayout />} />
+          <Route path="/" element={<AuthLayout />} />
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/generate" element={<ListingForm />} />
             <Route path="/listings" element={<Listings />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
-          {/* Catch all other routes and redirect to auth if not authenticated */}
-          <Route path="*" element={<Navigate to="/auth" replace />} />
+          {/* Catch all other routes and redirect to home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

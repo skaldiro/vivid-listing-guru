@@ -1,11 +1,10 @@
 import NavBar from "@/components/NavBar";
-import { Outlet, Navigate, useNavigate } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const MainLayout = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -13,7 +12,7 @@ export const MainLayout = () => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          console.log("No session found, redirecting to auth");
+          console.log("No session found, redirecting to home");
           setIsAuthenticated(false);
           return;
         }
@@ -44,9 +43,9 @@ export const MainLayout = () => {
     return null;
   }
 
-  // Redirect to auth page if not authenticated
+  // Redirect to home page if not authenticated
   if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (

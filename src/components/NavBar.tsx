@@ -35,13 +35,10 @@ const NavBar = () => {
           variant: "destructive",
         });
       }
-      // Always navigate to auth page, even if there's an error
-      // This ensures users can re-authenticate if their session is invalid
-      navigate("/auth");
+      navigate("/");
     } catch (error) {
       console.error("Unexpected logout error:", error);
-      // Force navigation to auth page on unexpected errors
-      navigate("/auth");
+      navigate("/");
     }
   };
 
@@ -77,12 +74,12 @@ const NavBar = () => {
   return (
     <div className="border-b bg-white">
       <div className="flex h-16 items-center px-4 max-w-7xl mx-auto">
-        <div 
-          className="font-semibold text-xl cursor-pointer" 
+        <img 
+          src="/lovable-uploads/0644edac-ccbc-4c0e-b3b6-23179bdb60bb.png"
+          alt="Electric AI"
+          className="h-8 cursor-pointer"
           onClick={() => navigate("/")}
-        >
-          Electric AI
-        </div>
+        />
 
         <NavigationMenu className="hidden md:flex mx-6">
           <NavigationMenuList>
