@@ -7,28 +7,19 @@ const AuthLayout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Clear any existing session on auth page load
-    const cleanupSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          // If there's an existing session on the auth page, clear it
-          await supabase.auth.signOut();
-          console.log("Cleared existing session on auth page");
-        }
-      } catch (error) {
-        console.error("Error cleaning up session:", error);
-        // Attempt to clear session even if there's an error
-        await supabase.auth.signOut();
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/home");
       }
     };
 
-    cleanupSession();
+    checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state change:", event);
       if (event === 'SIGNED_IN' && session) {
-        navigate("/");
+        navigate("/home");
       }
     });
 

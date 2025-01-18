@@ -19,7 +19,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<AuthLayout />} />
+          {/* Root path redirects to /home */}
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/auth" element={<AuthLayout />} />
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/generate" element={<ListingForm />} />
@@ -27,7 +29,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
           </Route>
           {/* Catch all other routes and redirect to home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
