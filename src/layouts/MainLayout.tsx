@@ -12,7 +12,7 @@ export const MainLayout = () => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
-          console.log("No session found, redirecting to home");
+          console.log("No session found, redirecting to auth");
           setIsAuthenticated(false);
           return;
         }
@@ -38,20 +38,24 @@ export const MainLayout = () => {
     checkAuth();
   }, []);
 
-  // Show nothing while checking auth status
+  // Show loading state while checking auth status
   if (isAuthenticated === null) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-gray-500">Loading...</div>
+      </div>
+    );
   }
 
-  // Redirect to home page if not authenticated
+  // Redirect to auth page if not authenticated
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/auth" replace />;
   }
 
   return (
     <div className="main-layout">
       <NavBar />
-      <main className="main-container max-w-7xl mx-auto px-4 py-8">
+      <main className="main-container">
         <Outlet />
         <div className="mt-8 space-y-2">
           <p className="text-sm text-gray-500 italic">
