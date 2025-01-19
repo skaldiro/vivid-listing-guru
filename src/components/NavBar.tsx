@@ -77,7 +77,7 @@ const NavBar = () => {
         <img 
           src="/lovable-uploads/0644edac-ccbc-4c0e-b3b6-23179bdb60bb.png"
           alt="Electric AI"
-          className="h-8 cursor-pointer"
+          className="h-12 cursor-pointer" // Increased from h-8 to h-12
           onClick={() => navigate("/")}
         />
 
