@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,9 +12,9 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --primary: 45 59 45;
     --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
+    --secondary: 107 100 255;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
@@ -32,8 +34,11 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased font-body;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
   }
 }
 
@@ -46,7 +51,7 @@
 }
 
 .auth-title {
-  @apply text-2xl font-semibold tracking-tight text-center mb-2;
+  @apply text-2xl font-semibold tracking-tight text-center mb-2 font-heading;
 }
 
 .auth-subtitle {
@@ -66,7 +71,7 @@
 }
 
 .page-title {
-  @apply text-3xl font-semibold tracking-tight;
+  @apply text-3xl font-semibold tracking-tight font-heading;
 }
 
 .page-description {
