@@ -1,29 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
+    /* Base Colors */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
-    --radius: 0.75rem;
+    
+    /* Spacing */
+    --space-2: 2px;
+    --space-4: 4px;
+    --space-8: 8px;
+    --space-12: 12px;
+    --space-16: 16px;
+    --space-20: 20px;
+    --space-24: 24px;
+    --space-32: 32px;
+    --space-40: 40px;
+    --space-48: 48px;
+    --space-64: 64px;
+
+    /* Shadows */
+    --shadow-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
   }
 }
 
@@ -32,13 +41,62 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground font-body antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
   }
 }
 
+/* Typography */
+.h1 {
+  @apply font-heading text-4xl leading-tight font-bold tracking-tight;
+}
+
+.h2 {
+  @apply font-heading text-3xl leading-tight font-bold tracking-tight;
+}
+
+.h3 {
+  @apply font-heading text-2xl leading-tight font-semibold;
+}
+
+.body-lg {
+  @apply font-body text-base leading-relaxed;
+}
+
+.body-md {
+  @apply font-body text-sm leading-relaxed;
+}
+
+.body-sm {
+  @apply font-body text-xs leading-relaxed;
+}
+
+/* Component Styles */
+.button-primary {
+  @apply bg-primary text-white px-4 py-2.5 rounded-full font-medium text-sm transition-all hover:bg-primary-hover active:bg-primary-active disabled:bg-neutral-300 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0;
+}
+
+.button-secondary {
+  @apply bg-white text-primary border border-neutral-200 px-4 py-2.5 rounded-full font-medium text-sm transition-all hover:border-neutral-300 active:bg-neutral-50 disabled:bg-neutral-100 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0;
+}
+
+.input {
+  @apply w-full px-3 py-2.5 border border-neutral-200 rounded-md font-body text-sm transition-colors hover:border-neutral-300 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none;
+}
+
+.card {
+  @apply bg-white rounded-lg border border-neutral-200 p-6 shadow-sm transition-all;
+}
+
+.card-interactive {
+  @apply cursor-pointer hover:-translate-y-0.5 hover:shadow-md;
+}
+
 .auth-container {
-  @apply min-h-screen bg-gradient-to-br from-white to-gray-50 flex items-center justify-center p-4;
+  @apply min-h-screen flex flex-col items-center justify-center bg-neutral-50 p-4;
 }
 
 .auth-card {
@@ -46,15 +104,15 @@
 }
 
 .auth-title {
-  @apply text-2xl font-semibold tracking-tight text-center mb-2;
+  @apply text-2xl font-heading font-semibold tracking-tight text-center mb-2;
 }
 
 .auth-subtitle {
-  @apply text-sm text-muted-foreground text-center mb-6;
+  @apply text-sm text-neutral-500 text-center mb-6;
 }
 
 .main-layout {
-  @apply min-h-screen bg-gray-50;
+  @apply min-h-screen bg-neutral-50;
 }
 
 .main-container {
@@ -66,9 +124,9 @@
 }
 
 .page-title {
-  @apply text-3xl font-semibold tracking-tight;
+  @apply text-3xl font-heading font-semibold tracking-tight;
 }
 
 .page-description {
-  @apply text-muted-foreground mt-2;
+  @apply text-neutral-500 mt-2;
 }

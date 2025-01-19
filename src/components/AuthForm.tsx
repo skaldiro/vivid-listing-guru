@@ -3,7 +3,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
 import { AuthError, AuthApiError } from "@supabase/supabase-js";
 import { AuthFormFields } from "./auth/AuthFormFields";
-import { AuthSubmitButton } from "./auth/AuthSubmitButton";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const AuthForm = () => {
@@ -118,8 +119,8 @@ const AuthForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <h1 className="text-2xl font-bold text-center mb-2">Welcome to Electric AI</h1>
-      <p className="text-gray-600 text-center mb-8">
+      <h1 className="h1 text-center mb-2">Welcome to Electric AI</h1>
+      <p className="body-md text-neutral-600 text-center mb-8">
         Generate amazing property listings in seconds
       </p>
 
@@ -143,10 +144,20 @@ const AuthForm = () => {
           isSubmitting={isSubmitting}
         />
 
-        <AuthSubmitButton 
-          isSignUp={isSignUp} 
-          isSubmitting={isSubmitting} 
-        />
+        <Button 
+          type="submit" 
+          className="button-primary w-full"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {isSignUp ? "Creating account..." : "Signing in..."}
+            </>
+          ) : (
+            isSignUp ? "Create account" : "Sign in"
+          )}
+        </Button>
       </form>
 
       <div className="mt-4 text-center">
@@ -155,7 +166,7 @@ const AuthForm = () => {
             setIsSignUp(!isSignUp);
             setError(null);
           }}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-secondary hover:text-secondary-hover transition-colors"
           disabled={isSubmitting}
         >
           {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
