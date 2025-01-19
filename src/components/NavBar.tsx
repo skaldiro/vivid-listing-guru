@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Settings, LogOut, User, Menu as MenuIcon, PlusCircle, List } from "lucide-react";
+import { Settings, LogOut, User, Menu, PlusCircle, List } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
@@ -46,7 +46,7 @@ const NavBar = () => {
     <>
       <NavigationMenuItem className="w-full">
         <NavigationMenuLink
-          className={`${navigationMenuTriggerStyle()} w-full justify-start hover:bg-neutral-50`}
+          className={`${navigationMenuTriggerStyle()} w-full justify-start`}
           onClick={() => {
             navigate("/generate");
             onItemClick?.();
@@ -58,7 +58,7 @@ const NavBar = () => {
       </NavigationMenuItem>
       <NavigationMenuItem className="w-full">
         <NavigationMenuLink
-          className={`${navigationMenuTriggerStyle()} w-full justify-start hover:bg-neutral-50`}
+          className={`${navigationMenuTriggerStyle()} w-full justify-start`}
           onClick={() => {
             navigate("/listings");
             onItemClick?.();
@@ -77,7 +77,7 @@ const NavBar = () => {
         <img 
           src="/lovable-uploads/0644edac-ccbc-4c0e-b3b6-23179bdb60bb.png"
           alt="Electric AI"
-          className="h-12 cursor-pointer"
+          className="h-12 cursor-pointer" // Increased from h-8 to h-12
           onClick={() => navigate("/")}
         />
 
@@ -91,8 +91,8 @@ const NavBar = () => {
           <div className="md:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="hover:bg-neutral-50">
-                  <MenuIcon className="h-5 w-5" />
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px]">
@@ -104,7 +104,7 @@ const NavBar = () => {
                   </NavigationMenu>
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-start hover:bg-neutral-50" 
+                    className="w-full justify-start" 
                     onClick={() => {
                       navigate("/settings");
                       setIsOpen(false);
@@ -115,7 +115,7 @@ const NavBar = () => {
                   </Button>
                   <Button 
                     variant="ghost" 
-                    className="w-full justify-start hover:bg-neutral-50" 
+                    className="w-full justify-start" 
                     onClick={() => {
                       handleLogout();
                       setIsOpen(false);
@@ -132,16 +132,16 @@ const NavBar = () => {
           <div className="hidden md:block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="hover:bg-neutral-50">
+                <Button variant="ghost" size="icon">
                   <User className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => navigate("/settings")} className="hover:bg-neutral-50">
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => navigate("/settings")}>
                   <Settings className="mr-2 h-4 w-4" />
                   Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout} className="hover:bg-neutral-50">
+                <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
