@@ -6,6 +6,7 @@
 
 @layer base {
   :root {
+    /* Base Colors */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     
@@ -21,6 +22,17 @@
     --space-40: 40px;
     --space-48: 48px;
     --space-64: 64px;
+
+    /* Shadows */
+    --shadow-sm: 0px 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0px 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
   }
 }
 
@@ -37,76 +49,84 @@
   }
 }
 
-@layer components {
-  .h1 {
-    @apply font-heading text-4xl md:text-5xl lg:text-6xl leading-tight font-bold tracking-tight;
-  }
+/* Typography */
+.h1 {
+  @apply font-heading text-4xl leading-tight font-bold tracking-tight;
+}
 
-  .h2 {
-    @apply font-heading text-3xl md:text-4xl lg:text-5xl leading-tight font-bold tracking-tight;
-  }
+.h2 {
+  @apply font-heading text-3xl leading-tight font-bold tracking-tight;
+}
 
-  .h3 {
-    @apply font-heading text-2xl md:text-3xl leading-tight font-semibold;
-  }
+.h3 {
+  @apply font-heading text-2xl leading-tight font-semibold;
+}
 
-  .subtitle {
-    @apply text-lg md:text-xl text-neutral-600 leading-relaxed;
-  }
+.body-lg {
+  @apply font-body text-base leading-relaxed;
+}
 
-  .body-lg {
-    @apply font-body text-lg leading-relaxed;
-  }
+.body-md {
+  @apply font-body text-sm leading-relaxed;
+}
 
-  .body-base {
-    @apply font-body text-base leading-relaxed;
-  }
+.body-sm {
+  @apply font-body text-xs leading-relaxed;
+}
 
-  .body-sm {
-    @apply font-body text-sm leading-relaxed;
-  }
+/* Component Styles */
+.button-primary {
+  @apply bg-primary text-white px-4 py-2.5 rounded-full font-medium text-sm transition-all hover:bg-primary-hover active:bg-primary-active disabled:bg-neutral-300 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0;
+}
 
-  .button-primary {
-    @apply bg-primary text-white px-6 py-3 rounded-full font-medium transition-all hover:bg-primary-hover active:bg-primary-active disabled:bg-neutral-300 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0;
-  }
+.button-secondary {
+  @apply bg-white text-primary border border-neutral-200 px-4 py-2.5 rounded-full font-medium text-sm transition-all hover:border-neutral-300 active:bg-neutral-50 disabled:bg-neutral-100 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0;
+}
 
-  .button-secondary {
-    @apply bg-white text-primary border border-neutral-200 px-6 py-3 rounded-full font-medium transition-all hover:border-neutral-300 active:bg-neutral-50 disabled:bg-neutral-100 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0;
-  }
+.input {
+  @apply w-full px-3 py-2.5 border border-neutral-200 rounded-md font-body text-sm transition-colors hover:border-neutral-300 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none;
+}
 
-  .input {
-    @apply w-full px-4 py-3 border border-neutral-200 rounded-lg font-body transition-colors hover:border-neutral-300 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none;
-  }
+.card {
+  @apply bg-white rounded-lg border border-neutral-200 p-6 shadow-sm transition-all;
+}
 
-  .card {
-    @apply bg-white rounded-xl border border-neutral-200 p-6 shadow-sm transition-all;
-  }
+.card-interactive {
+  @apply cursor-pointer hover:-translate-y-0.5 hover:shadow-md;
+}
 
-  .card-interactive {
-    @apply cursor-pointer hover:-translate-y-1 hover:shadow-md;
-  }
+.auth-container {
+  @apply min-h-screen flex flex-col items-center justify-center bg-neutral-50 p-4;
+}
 
-  .feature-card {
-    @apply p-6 rounded-xl transition-all;
-  }
+.auth-card {
+  @apply w-full max-w-md bg-white rounded-xl shadow-sm border p-8 space-y-6;
+}
 
-  .feature-card-purple {
-    @apply bg-secondary-light;
-  }
+.auth-title {
+  @apply text-2xl font-heading font-semibold tracking-tight text-center mb-2;
+}
 
-  .feature-card-green {
-    @apply bg-primary-light;
-  }
+.auth-subtitle {
+  @apply text-sm text-neutral-500 text-center mb-6;
+}
 
-  .feature-card-peach {
-    @apply bg-accent-peach;
-  }
+.main-layout {
+  @apply min-h-screen bg-neutral-50;
+}
 
-  .pricing-card {
-    @apply p-8 rounded-2xl border-2 transition-all hover:border-primary;
-  }
+.main-container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+}
 
-  .pricing-card-highlight {
-    @apply border-primary bg-primary-light;
-  }
+.page-header {
+  @apply mb-8;
+}
+
+.page-title {
+  @apply text-3xl font-heading font-semibold tracking-tight;
+}
+
+.page-description {
+  @apply text-neutral-500 mt-2;
 }
